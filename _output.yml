@@ -1,0 +1,24 @@
+bookdown::gitbook:
+  css: style.css
+  config:
+    toc:
+      before: |
+        <div style="text-align:center">
+        <li class="toc-logo"><a href="./"><img src="img/icme13.png" width="300" height="300"></a></li>
+        <li><a href="https://www.microbeco.org/icme13-roma-2024/"><strong>ICME 13</strong></a></li>
+        </div>
+      after: |
+        <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+    download: ["pdf", "epub"]
+    sharing:
+      github: yes
+      facebook: no
+      twitter: no
+      all: no
+bookdown::pdf_book:
+  includes:
+    in_header: preamble.tex
+  latex_engine: xelatex
+  citation_package: natbib
+  keep_tex: yes
+bookdown::epub_book: default

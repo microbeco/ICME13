@@ -1,0 +1,40 @@
+---
+title: "ICME 13 - Rome Edition"
+subtitle: "Crash course on Nanopore sequencing for microbial ecology"
+author:
+    - "Manuela Coci"
+    - "Luigi Gallucci"
+    - "Davide Corso"
+date: "Last update: `r Sys.Date()`"
+site: bookdown::bookdown_site
+documentclass: book
+# bibliography: [book.bib, packages.bib]
+# biblio-style: apalike
+# url: your book url like https://bookdown.org/yihui/bookdown
+# cover-image: path to the social sharing image like images/cover.jpg
+description: "Book for for the ICME series courses"
+link-citations: yes
+github-repo: microbeco/microbeco.github.io
+---
+
+# Introduction
+
+<!-- [![forthebadge](https://forthebadge.com/images/badges/cc-by-nd.svg)](https://forthebadge.com) -->
+<!-- [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) -->
+<!-- [![forthebadge](https://forthebadge.com/images/badges/uses-badges.svg)](https://forthebadge.com) -->
+
+[![MicrobEco](https://img.shields.io/badge/By-MicrobEco-blue)](https://www.microbeco.org)
+[![made-with-Markdown](https://img.shields.io/badge/Made%20with-code-d65db1.svg)](https://www.r-project.org)
+[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://www.microbeco.org)
+
+MicrobEco is a scientific organization with a common view: disseminate knowledge, strengthen collaboration, create and provide opportunities to learn about, discuss and challenge frontier issues in microbial ecology. We connect scientists and we educate future generations to know and to do not fear microbes.
+
+## ICME 13 - Rome
+
+The 13th edition of the International Course in Microbial Ecology -ICME13 focuses on the Nanopore sequencing techniques and data analysis for microbial ecologists. It is a practical course addressed to maximum 25 PhD students and early career researchers. The course includes the following activities:
+
+- Practical experience in sequencing using Nanopore technology (MinIon)
+- Bioinformatic analysis of Nanopore sequencing data.
+
+During the course, students will generate and analyze metagenomic data from DNA samples previously extracted and tested for the training activities. The course is hand-on training with a clear practical setting, preceded by theoretical activities. Online bioinformatic and ad hoc customized pipelines will be presented. Participants will have to introduce themselves with a 3 minutes presentation, including their main research topic.
+
