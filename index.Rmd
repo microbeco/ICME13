@@ -23,9 +23,9 @@ github-repo: microbeco/microbeco.github.io
 <!-- [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com) -->
 <!-- [![forthebadge](https://forthebadge.com/images/badges/uses-badges.svg)](https://forthebadge.com) -->
 
-[![MicrobEco](https://img.shields.io/badge/By-MicrobEco-blue)](https://www.microbeco.org)
-[![made-with-Markdown](https://img.shields.io/badge/Made%20with-code-d65db1.svg)](https://www.r-project.org)
-[![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://www.microbeco.org)
+<!-- [![MicrobEco](https://img.shields.io/badge/By-MicrobEco-blue)](https://www.microbeco.org) -->
+<!-- [![made-with-Markdown](https://img.shields.io/badge/Made%20with-code-d65db1.svg)](https://www.r-project.org) -->
+<!-- [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://www.microbeco.org) -->
 
 MicrobEco is a scientific organization with a common view: disseminate knowledge, strengthen collaboration, create and provide opportunities to learn about, discuss and challenge frontier issues in microbial ecology. We connect scientists and we educate future generations to know and to do not fear microbes.
 
