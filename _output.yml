@@ -4,7 +4,7 @@ bookdown::gitbook:
     toc:
       before: |
         <div style="text-align:center">
-        <li class="toc-logo"><a href="./"><img src="img/icme13.png" width="300" height="300"></a></li>
+        <li class="toc-logo"><a href="./"><img src="img/icme_13.png" width="250" height="250"></a></li>
         <li><a href="https://www.microbeco.org/icme13-roma-2024/"><strong>ICME 13</strong></a></li>
         </div>
       after: |
