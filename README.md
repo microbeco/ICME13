@@ -1,4 +1,4 @@
-# G.Lab. Book
+# ICME 13 - Rome
 
 Rendered Book URL: https://microbeco.github.io/
 
