@@ -1,5 +1,6 @@
 delete_merged_file: true
 output_dir: "docs"
+book_filename: "icme13"
 language:
   ui:
     chapter_name: ""
