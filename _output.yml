@@ -8,9 +8,7 @@ bookdown::gitbook:
         <li><a href="https://www.microbeco.org/icme13-roma-2024/"><strong>ICME 13</strong></a></li>
         </div>
       after: |
-        <div style="text-align:>
         <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
-        </div>
     download: ["pdf"]
     sharing:
       github: yes
