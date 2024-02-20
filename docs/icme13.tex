@@ -36,6 +36,46 @@
   \KOMAoptions{parskip=half}}
 \makeatother
 \usepackage{xcolor}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
 \usepackage{longtable,booktabs,array}
 \usepackage{calc} % for calculating minipage widths
 % Correct order of tables after \paragraph or \subparagraph
@@ -113,5 +153,412 @@ The 13th edition of the International Course in Microbial Ecology -ICME13 focuse
 \end{itemize}
 
 During the course, students will generate and analyze metagenomic data from DNA samples previously extracted and tested for the training activities. The course is hand-on training with a clear practical setting, preceded by theoretical activities. Online bioinformatic and ad hoc customized pipelines will be presented. Participants will have to introduce themselves with a 3 minutes presentation, including their main research topic.
+
+\chapter{Introduction to the command line}\label{introduction-to-the-command-line}
+
+\section{Set-up a terminal}\label{set-up-a-terminal}
+
+\textbf{MacOS/Linux:} Launch terminal on your machine.
+
+\textbf{Windows users options:}
+\textbf{Windows Subsystem for Linux (WSL)} --\textgreater{} It creates an Ubuntu terminal environment where you can code just like from a linux Ubuntu terminal. This is useful for the course as well as for practice working in bash. \href{https://ubuntu.com/wsl}{from ubuntu website} and \href{https://learn.microsoft.com/en-us/windows/wsl/install}{from the windows website}
+
+\textbf{SSH client} --\textgreater{} Windows: {[}MobaXterm{]}(~\url{https://mobaxterm.mobatek.net/download-home-edition.html} . This is a very basic ssh client, meaning, it will allow you to connect to the server and it will serve as a terminal for the course.
+
+If you are already using Visual Studio, it needs one ssh~\href{https://code.visualstudio.com/docs/remote/ssh}{extension}~plugin to serve as a ssh.
+
+\textbf{Git for windows} --\textgreater{} I am not sure this can be used as a ssh but, in regards to this course, it is also useful to practice coding on the terminal.
+
+Very last-minute resource --\textgreater{} launch \href{https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&mem=192}{this terminal emulator} in a new window.
+
+\section{Working with the command line}\label{working-with-the-command-line}
+
+Most of the activities of the bioinformatic section of this workshop will be done using the Unix command line (Unix shell).\\
+It is therefore highly recommended to have at least a basic grasp of how to get around in the Unix shell.\\
+We will now dedicate one hour or so to follow some basic to learn (or refresh) the basics of the Unix shell.
+
+\begin{quote}
+{[}!question{]} What is the UNIX SHELL? What is Bash?
+
+\begin{quote}
+{[}!todo{]} The shell is a program that enables us to send commands to the computer and receive output. It is also referred to as the terminal or command line. Some computers include a default Unix Shell program.
+\end{quote}
+
+\begin{quote}
+{[}!todo{]} The most popular Unix shell is Bash, Bash is a shell and a command language.
+\end{quote}
+
+For a \textbf{Mac} computer running macOS Mojave or earlier releases, the default Unix Shell is Bash.
+
+For a \textbf{Mac} computer running macOS Catalina or later releases, the default Unix Shell is Zsh. Your default shell is available via the Terminal program within your Utilities folder.
+
+The default Unix Shell for \textbf{Linux} operating systems is usually Bash.
+\end{quote}
+
+\section{Playing around with basic UNIX commands}\label{playing-around-with-basic-unix-commands}
+
+\subsection{Some notes!}\label{some-notes}
+
+These commands:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mkdir}\NormalTok{ unix\_shell}
+\BuiltInTok{cd}\NormalTok{ unix\_shell}
+\end{Highlighting}
+\end{Shaded}
+
+\ldots are commands you need to type in the shell.
+Each line is a command.
+Commands have to be typed in a single line, one at a time.
+After each command, hit ``Enter'' to execute it.
+
+Things starting with a hashtag:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# This is a comment and is ignored by the shell}
+\end{Highlighting}
+\end{Shaded}
+
+\ldots are comments embedded in the code to give instructions to the user.
+Anything in a line starting with a \texttt{\#} is ignored by the shell.
+
+Different commands might expect different syntaxes and different types of arguments. Some times the order matters, some times it doesn't! The best way to check how to run a command is by taking a look at its manual with the command \texttt{man} or to the --help for a shorter version of it:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{man}\NormalTok{ mkdir}
+
+\CommentTok{\# You can scroll down by hitting the space bar}
+\CommentTok{\# To quit, hit "q"}
+
+\FunctionTok{mkdir} \AttributeTok{{-}h}
+
+\CommentTok{\# did it work?}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Creating and navigating directories}\label{creating-and-navigating-directories}
+
+First let's see where we are:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{pwd}  \CommentTok{\# print working directory}
+\end{Highlighting}
+\end{Shaded}
+
+Are there any files here? Let's list the contents of the folder:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ls}
+
+\CommentTok{\# or }
+
+\ExtensionTok{ll}
+\end{Highlighting}
+\end{Shaded}
+
+Let's now create a new folder called \texttt{unix\_shell}. In addition to the command (\texttt{mkdir}), we are now passing a term (also known as an argument) which, in this case, is the name of the folder we want to create:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mkdir}\NormalTok{ unix\_shell}
+\end{Highlighting}
+\end{Shaded}
+
+Has anything changed? How to list the contents of the folder again?
+
+HINT (CLICK TO EXPAND)
+
+\begin{quote}
+ls
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+And now let's enter the \texttt{unix\_shell} folder:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd}\NormalTok{ unix\_shell}
+\end{Highlighting}
+\end{Shaded}
+
+Did it work? Where are we now?
+
+HINT
+
+\begin{quote}
+pwd
+\end{quote}
+
+\subsection{Creating a new file}\label{creating-a-new-file}
+
+Let's create a new file called \texttt{myfile.txt} by launching the text editor \texttt{nano}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{nano}\NormalTok{ myfile.txt}
+\end{Highlighting}
+\end{Shaded}
+
+Now inside the nano screen:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  Write some text
+\item
+  Exit the ``writing mode'' with ctrl+x
+  nano
+\item
+  To save the file, type \textbf{y} and hit ``Enter''
+\item
+  Confirm the name of the file and hit ``Enter''
+\end{enumerate}
+
+List the contents of the folder. Can you see the file we have just created?
+
+\subsection{Copying, renaming, moving and deleting files}\label{copying-renaming-moving-and-deleting-files}
+
+First let's create a new folder called \texttt{myfolder}. Do you remember how to do this?
+
+HINT
+
+\begin{quote}
+mkdir myfolder
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+And now let's make a copy of \texttt{myfile.txt}. Here, the command \texttt{cp} expects two arguments, and the order of these arguments matter. The first is the name of the file we want to copy, and the second is the name of the new file:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cp}\NormalTok{ myfile.txt newfile.txt}
+\end{Highlighting}
+\end{Shaded}
+
+List the contents of the folder. Do you see the new file there?
+
+Now let's say we want to copy a file and put it inside a folder. In this case, we give the name of the folder as the second argument to \texttt{cp}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cp}\NormalTok{ myfile.txt myfolder }
+
+\CommentTok{\# while typing myfold.. try using the TAB to predict the name of the folder!}
+
+\FunctionTok{cp}\NormalTok{ myfile.txt myfolder/  }\CommentTok{\# it will recognise it is a directory and add the / at the end.}
+\end{Highlighting}
+\end{Shaded}
+
+List the contents of \texttt{myfolder}. Is \texttt{myfile.txt} there?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ls}\NormalTok{ myfolder}
+\end{Highlighting}
+\end{Shaded}
+
+We can also copy the file to another folder and give it a different name, like this:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cp}\NormalTok{ myfile.txt myfolder/copy\_of\_myfile.txt}
+\end{Highlighting}
+\end{Shaded}
+
+List the contents of \texttt{myfolder} again. Do you see two files there?
+
+Instead of copying, we can move files around with the command \texttt{mv}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mv}\NormalTok{ newfile.txt myfolder}
+\end{Highlighting}
+\end{Shaded}
+
+Let's list the contents of the folders. Where did \texttt{newfile.txt} go?
+
+We can also use the command \texttt{mv} to rename files:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mv}\NormalTok{ myfile.txt myfile\_renamed.txt}
+\end{Highlighting}
+\end{Shaded}
+
+List the contents of the folder again. What happened to \texttt{myfile.txt}?
+
+Now, let's say we want to move things from inside \texttt{myfolder} to the current directory. Can you see what the dot (\texttt{.}) is doing in the command below? Let's try:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{mv}\NormalTok{ myfolder/newfile.txt .}
+\end{Highlighting}
+\end{Shaded}
+
+Let's list the contents of the folders. The file \texttt{newfile.txt} was inside \texttt{myfolder} before, where is it now?
+
+The same operation can be done in a different way. In the commands below, can you see what the two dots (\texttt{.}) are doing? Let's try:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# First we go inside the folder}
+\BuiltInTok{cd}\NormalTok{ myfolder}
+
+\CommentTok{\# Then we move the file one level up}
+\FunctionTok{mv}\NormalTok{ myfile.txt ..}
+
+\CommentTok{\# And then we go back one level}
+\BuiltInTok{cd}\NormalTok{ ..}
+\end{Highlighting}
+\end{Shaded}
+
+Let's list the contents of the folders. The file \texttt{myfile.txt} was inside \texttt{myfolder} before, where is it now?
+
+To remove files :
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rm}\NormalTok{ newfile.txt}
+\end{Highlighting}
+\end{Shaded}
+
+Let's list the contents of the folder. What happened to \texttt{newfile.txt}?
+
+And now let's delete \texttt{myfolder}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rm}\NormalTok{ myfolder}
+\end{Highlighting}
+\end{Shaded}
+
+It didn't work did it? An error message came up, what does it mean?
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{rm:}\NormalTok{ cannot remove ‘myfolder’: Is a directory}
+\end{Highlighting}
+\end{Shaded}
+
+To delete a folder we have to modify the command further by adding the flag (\texttt{-r}). Flags are used to pass additional options to the commands:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{rm} \AttributeTok{{-}r}\NormalTok{ myfolder}
+\end{Highlighting}
+\end{Shaded}
+
+Let's list the contents of the folder. What happened to \texttt{myfolder}?
+
+\begin{quote}
+{[}!warning{]}
+\textbf{In Bash, If you remove the wrong file/directory, it is gone forever!! (no recycle bin!)}
+\textbf{aka BE CAREFUL!!}
+\end{quote}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\subsection{Copying this/any GitHub repository}\label{copying-thisany-github-repository}
+
+\textbf{Remember}: You can check where you are with the command \texttt{pwd}.
+
+To have access to some scripts and some of the mock data of this lesson, let's copy this GitHub repository to your home folder using \texttt{git\ clone}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{git}\NormalTok{ clone https://github.com/TomasaSbaffi/ICME12\_Verbania{-}2023}
+\end{Highlighting}
+\end{Shaded}
+
+You should now have a folder called \textbf{ICME12\_Verbania-2023} in your directory (where you were when you launched the command!).
+
+To get the latest updates, pull the changes from GitHub using \texttt{git\ pull}:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{cd}\NormalTok{ ICME12\_Verbania{-}2023}
+\FunctionTok{git}\NormalTok{ pull}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
+
+\section{Shell scripts}\label{shell-scripts}
+
+You don't need to run a command at a time, you can pre- think, organize series of actions (a program) that you can then execute within Bash:
+
+\begin{itemize}
+\tightlist
+\item
+  Write a shell script that runs a command or series of commands for a fixed set of files.
+\item
+  Run a shell script from the command line.
+\end{itemize}
+
+We want to see the first 10 lines of the forward fastq file of sample 1:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{zcat}\NormalTok{ S1\_R1.fastq.gz }\KeywordTok{|} \FunctionTok{head} \AttributeTok{{-}n}\NormalTok{ 10}
+\end{Highlighting}
+\end{Shaded}
+
+where:
+- \textbf{zcat} lets you see what is in a zipped file while not unzipping it
+- \textbf{\textbar{}} is the PIPE, it lets you connect actions: the output of a command is the input of the next command
+
+\textbf{OR}
+we can write a little program to a file and execute it as many times as we want:
+
+\begin{itemize}
+\tightlist
+\item
+  let's open a new nano/vim file fastq\_head.sh and write in it:
+\end{itemize}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#!/bin/bash}
+\FunctionTok{zcat}\NormalTok{ S1\_R1.fastq.gz }\KeywordTok{|} \FunctionTok{head} \AttributeTok{{-}n}\NormalTok{ 10 }\OperatorTok{\textgreater{}}\NormalTok{ S1\_fwd\_head.txt}
+
+\CommentTok{\# we also want to write the output to a .txt file}
+\CommentTok{\# \#!/bin/bash   {-}{-}\textgreater{} it is not necessary as in most cases Bash is your home shell}
+\end{Highlighting}
+\end{Shaded}
+
+Exit nano and see that in the directory there is a new file, let's execute it.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{sh}\NormalTok{ fastq\_head.sh}
+\end{Highlighting}
+\end{Shaded}
+
+Something more useful! I need to know how many reads are in the same file and output a .txt file with the number of those, knowing that:
+
+\begin{itemize}
+\tightlist
+\item
+  grep -e ``XXXX'' is a function that finds and prints strings from a file
+\item
+  wc is a command that \emph{can} help count lines
+\item
+  fastq files have a ``@'' in the reads headers.
+\end{itemize}
+
+HINT
+
+\begin{quote}
+zcat S1\_R1.fastq.gz \textbar{} grep -e ``@'' \textbar wc -l
+
+-l is the flag that let's you count lines
+\end{quote}
 
 \end{document}
