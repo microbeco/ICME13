@@ -6,7 +6,7 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>2 Introduction to the command line | ICME 13 - Rome Edition</title>
   <meta name="description" content="Book for for the ICME series courses" />
-  <meta name="generator" content="bookdown 0.37 and GitBook 2.6.7" />
+  <meta name="generator" content="bookdown 0.36 and GitBook 2.6.7" />
 
   <meta property="og:title" content="2 Introduction to the command line | ICME 13 - Rome Edition" />
   <meta property="og:type" content="book" />
@@ -57,7 +57,7 @@
 
 <style type="text/css">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -158,9 +158,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li class="chapter" data-level="2.3.2" data-path="introduction-to-the-command-line.html"><a href="introduction-to-the-command-line.html#creating-and-navigating-directories"><i class="fa fa-check"></i><b>2.3.2</b> Creating and navigating directories</a></li>
 <li class="chapter" data-level="2.3.3" data-path="introduction-to-the-command-line.html"><a href="introduction-to-the-command-line.html#creating-a-new-file"><i class="fa fa-check"></i><b>2.3.3</b> Creating a new file</a></li>
 <li class="chapter" data-level="2.3.4" data-path="introduction-to-the-command-line.html"><a href="introduction-to-the-command-line.html#copying-renaming-moving-and-deleting-files"><i class="fa fa-check"></i><b>2.3.4</b> Copying, renaming, moving and deleting files</a></li>
-<li class="chapter" data-level="2.3.5" data-path="introduction-to-the-command-line.html"><a href="introduction-to-the-command-line.html#copying-thisany-github-repository"><i class="fa fa-check"></i><b>2.3.5</b> Copying this/any GitHub repository</a></li>
 </ul></li>
-<li class="chapter" data-level="2.4" data-path="introduction-to-the-command-line.html"><a href="introduction-to-the-command-line.html#shell-scripts"><i class="fa fa-check"></i><b>2.4</b> Shell scripts</a></li>
 </ul></li>
 <li class="divider"></li>
 <li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
@@ -345,60 +343,8 @@ HINT
 <strong>In Bash, If you remove the wrong file/directory, it is gone forever!! (no recycle bin!)</strong>
 <strong>aka BE CAREFUL!!</strong></p>
 </blockquote>
-<hr />
-</div>
-<div id="copying-thisany-github-repository" class="section level3 hasAnchor" number="2.3.5">
-<h3><span class="header-section-number">2.3.5</span> Copying this/any GitHub repository<a href="introduction-to-the-command-line.html#copying-thisany-github-repository" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p><strong>Remember</strong>: You can check where you are with the command <code>pwd</code>.</p>
-<p>To have access to some scripts and some of the mock data of this lesson, let’s copy this GitHub repository to your home folder using <code>git clone</code>:</p>
-<div class="sourceCode" id="cb21"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb21-1"><a href="introduction-to-the-command-line.html#cb21-1" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/TomasaSbaffi/ICME12_Verbania-2023</span></code></pre></div>
-<p>You should now have a folder called <strong>ICME12_Verbania-2023</strong> in your directory (where you were when you launched the command!).</p>
-<p>To get the latest updates, pull the changes from GitHub using <code>git pull</code>:</p>
-<div class="sourceCode" id="cb22"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb22-1"><a href="introduction-to-the-command-line.html#cb22-1" tabindex="-1"></a><span class="bu">cd</span> ICME12_Verbania-2023</span>
-<span id="cb22-2"><a href="introduction-to-the-command-line.html#cb22-2" tabindex="-1"></a><span class="fu">git</span> pull</span></code></pre></div>
-<hr />
-</div>
-</div>
-<div id="shell-scripts" class="section level2 hasAnchor" number="2.4">
-<h2><span class="header-section-number">2.4</span> Shell scripts<a href="introduction-to-the-command-line.html#shell-scripts" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>You don’t need to run a command at a time, you can pre- think, organize series of actions (a program) that you can then execute within Bash:</p>
-<ul>
-<li>Write a shell script that runs a command or series of commands for a fixed set of files.</li>
-<li>Run a shell script from the command line.</li>
-</ul>
-<p>We want to see the first 10 lines of the forward fastq file of sample 1:</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb23-1"><a href="introduction-to-the-command-line.html#cb23-1" tabindex="-1"></a><span class="fu">zcat</span> S1_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 10</span></code></pre></div>
-<p>where:
-- <strong>zcat</strong> lets you see what is in a zipped file while not unzipping it
-- <strong>|</strong> is the PIPE, it lets you connect actions: the output of a command is the input of the next command</p>
-<p><strong>OR</strong>
-we can write a little program to a file and execute it as many times as we want:</p>
-<ul>
-<li>let’s open a new nano/vim file fastq_head.sh and write in it:</li>
-</ul>
-<div class="sourceCode" id="cb24"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb24-1"><a href="introduction-to-the-command-line.html#cb24-1" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
-<span id="cb24-2"><a href="introduction-to-the-command-line.html#cb24-2" tabindex="-1"></a><span class="fu">zcat</span> S1_R1.fastq.gz <span class="kw">|</span> <span class="fu">head</span> <span class="at">-n</span> 10 <span class="op">&gt;</span> S1_fwd_head.txt</span>
-<span id="cb24-3"><a href="introduction-to-the-command-line.html#cb24-3" tabindex="-1"></a></span>
-<span id="cb24-4"><a href="introduction-to-the-command-line.html#cb24-4" tabindex="-1"></a><span class="co"># we also want to write the output to a .txt file</span></span>
-<span id="cb24-5"><a href="introduction-to-the-command-line.html#cb24-5" tabindex="-1"></a><span class="co"># #!/bin/bash   --&gt; it is not necessary as in most cases Bash is your home shell</span></span></code></pre></div>
-<p>Exit nano and see that in the directory there is a new file, let’s execute it.</p>
-<div class="sourceCode" id="cb25"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb25-1"><a href="introduction-to-the-command-line.html#cb25-1" tabindex="-1"></a><span class="fu">sh</span> fastq_head.sh</span></code></pre></div>
-<p>Something more useful! I need to know how many reads are in the same file and output a .txt file with the number of those, knowing that:</p>
-<ul>
-<li>grep -e “XXXX” is a function that finds and prints strings from a file</li>
-<li>wc is a command that <em>can</em> help count lines</li>
-<li>fastq files have a “@” in the reads headers.</li>
-</ul>
-<details>
-<summary>
-HINT
-</summary>
-<blockquote>
-<p>zcat S1_R1.fastq.gz | grep -e “@” |wc -l</p>
-<p>-l is the flag that let’s you count lines</p>
-</blockquote>
-</details>
 
+</div>
 </div>
 </div>
             </section>

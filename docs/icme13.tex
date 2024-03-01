@@ -109,7 +109,7 @@
 \fi
 \usepackage[]{natbib}
 \bibliographystyle{plainnat}
-\usepackage{bookmark}
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same}
 \hypersetup{
@@ -127,7 +127,7 @@
 \makeatother
 \subtitle{Crash course on Nanopore sequencing for microbial ecology}
 \author{Manuela Coci \and Luigi Gallucci \and Davide Corso}
-\date{Last update: 2024-02-20}
+\date{Last update: 2024-03-01}
 
 \begin{document}
 \maketitle
@@ -136,11 +136,13 @@
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
-\chapter{Introduction}\label{introduction}
+\hypertarget{introduction}{%
+\chapter{Introduction}\label{introduction}}
 
 MicrobEco is a scientific organization with a common view: disseminate knowledge, strengthen collaboration, create and provide opportunities to learn about, discuss and challenge frontier issues in microbial ecology. We connect scientists and we educate future generations to know and to do not fear microbes.
 
-\section{ICME 13 - Rome}\label{icme-13---rome}
+\hypertarget{icme-13---rome}{%
+\section{ICME 13 - Rome}\label{icme-13---rome}}
 
 The 13th edition of the International Course in Microbial Ecology -ICME13 focuses on the Nanopore sequencing techniques and data analysis for microbial ecologists. It is a practical course addressed to maximum 25 PhD students and early career researchers. The course includes the following activities:
 
@@ -154,9 +156,11 @@ The 13th edition of the International Course in Microbial Ecology -ICME13 focuse
 
 During the course, students will generate and analyze metagenomic data from DNA samples previously extracted and tested for the training activities. The course is hand-on training with a clear practical setting, preceded by theoretical activities. Online bioinformatic and ad hoc customized pipelines will be presented. Participants will have to introduce themselves with a 3 minutes presentation, including their main research topic.
 
-\chapter{Introduction to the command line}\label{introduction-to-the-command-line}
+\hypertarget{introduction-to-the-command-line}{%
+\chapter{Introduction to the command line}\label{introduction-to-the-command-line}}
 
-\section{Set-up a terminal}\label{set-up-a-terminal}
+\hypertarget{set-up-a-terminal}{%
+\section{Set-up a terminal}\label{set-up-a-terminal}}
 
 \textbf{MacOS/Linux:} Launch terminal on your machine.
 
@@ -169,9 +173,10 @@ If you are already using Visual Studio, it needs one ssh~\href{https://code.visu
 
 \textbf{Git for windows} --\textgreater{} I am not sure this can be used as a ssh but, in regards to this course, it is also useful to practice coding on the terminal.
 
-Very last-minute resource --\textgreater{} launch \href{https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg&mem=192}{this terminal emulator} in a new window.
+Very last-minute resource --\textgreater{} launch \href{https://bellard.org/jslinux/vm.html?url=alpine-x86.cfg\&mem=192}{this terminal emulator} in a new window.
 
-\section{Working with the command line}\label{working-with-the-command-line}
+\hypertarget{working-with-the-command-line}{%
+\section{Working with the command line}\label{working-with-the-command-line}}
 
 Most of the activities of the bioinformatic section of this workshop will be done using the Unix command line (Unix shell).\\
 It is therefore highly recommended to have at least a basic grasp of how to get around in the Unix shell.\\
@@ -195,9 +200,11 @@ For a \textbf{Mac} computer running macOS Catalina or later releases, the defaul
 The default Unix Shell for \textbf{Linux} operating systems is usually Bash.
 \end{quote}
 
-\section{Playing around with basic UNIX commands}\label{playing-around-with-basic-unix-commands}
+\hypertarget{playing-around-with-basic-unix-commands}{%
+\section{Playing around with basic UNIX commands}\label{playing-around-with-basic-unix-commands}}
 
-\subsection{Some notes!}\label{some-notes}
+\hypertarget{some-notes}{%
+\subsection{Some notes!}\label{some-notes}}
 
 These commands:
 
@@ -239,7 +246,8 @@ Different commands might expect different syntaxes and different types of argume
 \end{Highlighting}
 \end{Shaded}
 
-\subsection{Creating and navigating directories}\label{creating-and-navigating-directories}
+\hypertarget{creating-and-navigating-directories}{%
+\subsection{Creating and navigating directories}\label{creating-and-navigating-directories}}
 
 First let's see where we are:
 
@@ -295,7 +303,8 @@ HINT
 pwd
 \end{quote}
 
-\subsection{Creating a new file}\label{creating-a-new-file}
+\hypertarget{creating-a-new-file}{%
+\subsection{Creating a new file}\label{creating-a-new-file}}
 
 Let's create a new file called \texttt{myfile.txt} by launching the text editor \texttt{nano}:
 
@@ -322,7 +331,8 @@ Now inside the nano screen:
 
 List the contents of the folder. Can you see the file we have just created?
 
-\subsection{Copying, renaming, moving and deleting files}\label{copying-renaming-moving-and-deleting-files}
+\hypertarget{copying-renaming-moving-and-deleting-files}{%
+\subsection{Copying, renaming, moving and deleting files}\label{copying-renaming-moving-and-deleting-files}}
 
 First let's create a new folder called \texttt{myfolder}. Do you remember how to do this?
 
@@ -461,104 +471,6 @@ Let's list the contents of the folder. What happened to \texttt{myfolder}?
 {[}!warning{]}
 \textbf{In Bash, If you remove the wrong file/directory, it is gone forever!! (no recycle bin!)}
 \textbf{aka BE CAREFUL!!}
-\end{quote}
-
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-\subsection{Copying this/any GitHub repository}\label{copying-thisany-github-repository}
-
-\textbf{Remember}: You can check where you are with the command \texttt{pwd}.
-
-To have access to some scripts and some of the mock data of this lesson, let's copy this GitHub repository to your home folder using \texttt{git\ clone}:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{git}\NormalTok{ clone https://github.com/TomasaSbaffi/ICME12\_Verbania{-}2023}
-\end{Highlighting}
-\end{Shaded}
-
-You should now have a folder called \textbf{ICME12\_Verbania-2023} in your directory (where you were when you launched the command!).
-
-To get the latest updates, pull the changes from GitHub using \texttt{git\ pull}:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\BuiltInTok{cd}\NormalTok{ ICME12\_Verbania{-}2023}
-\FunctionTok{git}\NormalTok{ pull}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{center}\rule{0.5\linewidth}{0.5pt}\end{center}
-
-\section{Shell scripts}\label{shell-scripts}
-
-You don't need to run a command at a time, you can pre- think, organize series of actions (a program) that you can then execute within Bash:
-
-\begin{itemize}
-\tightlist
-\item
-  Write a shell script that runs a command or series of commands for a fixed set of files.
-\item
-  Run a shell script from the command line.
-\end{itemize}
-
-We want to see the first 10 lines of the forward fastq file of sample 1:
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{zcat}\NormalTok{ S1\_R1.fastq.gz }\KeywordTok{|} \FunctionTok{head} \AttributeTok{{-}n}\NormalTok{ 10}
-\end{Highlighting}
-\end{Shaded}
-
-where:
-- \textbf{zcat} lets you see what is in a zipped file while not unzipping it
-- \textbf{\textbar{}} is the PIPE, it lets you connect actions: the output of a command is the input of the next command
-
-\textbf{OR}
-we can write a little program to a file and execute it as many times as we want:
-
-\begin{itemize}
-\tightlist
-\item
-  let's open a new nano/vim file fastq\_head.sh and write in it:
-\end{itemize}
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\CommentTok{\#!/bin/bash}
-\FunctionTok{zcat}\NormalTok{ S1\_R1.fastq.gz }\KeywordTok{|} \FunctionTok{head} \AttributeTok{{-}n}\NormalTok{ 10 }\OperatorTok{\textgreater{}}\NormalTok{ S1\_fwd\_head.txt}
-
-\CommentTok{\# we also want to write the output to a .txt file}
-\CommentTok{\# \#!/bin/bash   {-}{-}\textgreater{} it is not necessary as in most cases Bash is your home shell}
-\end{Highlighting}
-\end{Shaded}
-
-Exit nano and see that in the directory there is a new file, let's execute it.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\FunctionTok{sh}\NormalTok{ fastq\_head.sh}
-\end{Highlighting}
-\end{Shaded}
-
-Something more useful! I need to know how many reads are in the same file and output a .txt file with the number of those, knowing that:
-
-\begin{itemize}
-\tightlist
-\item
-  grep -e ``XXXX'' is a function that finds and prints strings from a file
-\item
-  wc is a command that \emph{can} help count lines
-\item
-  fastq files have a ``@'' in the reads headers.
-\end{itemize}
-
-HINT
-
-\begin{quote}
-zcat S1\_R1.fastq.gz \textbar{} grep -e ``@'' \textbar wc -l
-
--l is the flag that let's you count lines
 \end{quote}
 
 \end{document}
