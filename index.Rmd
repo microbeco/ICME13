@@ -36,5 +36,5 @@ The course "Crash course on Nanopore sequencing for microbial ecology" correspon
 
 The course is held at the laboratory of CNR-IRSA Institute of Water Research Roma Montelibretti. 
 
-Official page: [www.microbeco.org/icme13-roma-2024/](www.microbeco.org/icme13-roma-2024/)
+Official page: [https://www.microbeco.org/icme13-roma-2024/](https://www.microbeco.org/icme13-roma-2024/)
 
