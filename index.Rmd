@@ -27,14 +27,14 @@ github-repo: microbeco/microbeco.github.io
 <!-- [![made-with-Markdown](https://img.shields.io/badge/Made%20with-code-d65db1.svg)](https://www.r-project.org) -->
 <!-- [![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)](https://www.microbeco.org) -->
 
-MicrobEco is a scientific organization with a common view: disseminate knowledge, strengthen collaboration, create and provide opportunities to learn about, discuss and challenge frontier issues in microbial ecology. We connect scientists and we educate future generations to know and to do not fear microbes.
+MicrobEco is a non-profit scientific organization dedicated to the advancement of scientific research and know-how in the field of microbiology and ecology. MICROBECO's mission is to promote the understanding and appreciation of microbes, to disseminate knowledge, strengthen collaboration, create and provide opportunities to learn about, discuss and challenge frontier issues in microbial ecology and to support the development of new technologies and applications that can benefit society. We connect scientists and we educate future generations to know and to do not fear microbes.
 
 ## ICME 13 - Rome
 
-The 13th edition of the International Course in Microbial Ecology -ICME13 focuses on the Nanopore sequencing techniques and data analysis for microbial ecologists. It is a practical course addressed to maximum 25 PhD students and early career researchers. The course includes the following activities:
+The course "Crash course on Nanopore sequencing for microbial ecology" corresponds to the 13th edition of the ICME- International course in microbial ecology, which annually gathers selected students to receive theoretical and practical training on one or more techniques in microbial ecology. From 11 to 14 March 2024, 25 PhD students and early career researchers will have practical experience in sequencing using Nanopore technology (MinIon) and performing bioinformatic analysis of Nanopore sequencing data. As in the tradition of ICME, The entire course is designed to bring together beginners and experts, and to create a strong collaboration between colleagues that extends beyond the days of the course.
 
-- Practical experience in sequencing using Nanopore technology (MinIon)
-- Bioinformatic analysis of Nanopore sequencing data.
 
-During the course, students will generate and analyze metagenomic data from DNA samples previously extracted and tested for the training activities. The course is hand-on training with a clear practical setting, preceded by theoretical activities. Online bioinformatic and ad hoc customized pipelines will be presented. Participants will have to introduce themselves with a 3 minutes presentation, including their main research topic.
+The course is held at the laboratory of CNR-IRSA Institute of Water Research Roma Montelibretti. 
+
+Official page: [www.microbeco.org/icme13-roma-2024/](www.microbeco.org/icme13-roma-2024/)
 
