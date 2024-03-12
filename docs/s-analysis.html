@@ -455,7 +455,7 @@ mamba activate /home/irsa/miniconda3/envs/emu</p>
 <p>Emu - species-level taxonomic abundance for full-length 16S reads.</p>
 <p>This tool use a method optimized for error-prone full-length reads. However, it can be used for short-reads.</p>
 <p><a href="https://github.com/treangenlab/emu">https://github.com/treangenlab/emu</a></p>
-<p>To perform this annotation, we need a reference database that contains all the taxonomic information, which was already been downloaded in the following path: <code>/home/irsa/emu_database</code></p>
+<p>To perform this annotation, we need a reference database that contains all the taxonomic information, which was already been downloaded in the following path: <code>/SERVER/emu_database</code></p>
 <p><em>Requirement</em></p>
 <p>To execute this tool, you need to activate the conda environment:</p>
 <p><code>mamba activate /home/irsa/miniconda3/envs/emu</code></p>
@@ -472,7 +472,7 @@ mamba activate /home/irsa/miniconda3/envs/emu</p>
 <li>Create the folder for your output files (to use in your script)</li>
 <li>To perform this step you should create a script (Recommended name: <code>s03_abundance.sh</code>), and give it permission to be executed: <code>chmod u+x s03_abundance.sh</code>
 <ul>
-<li>Specify the path of the EMU database with the following line as an action: <code>export EMU_DATABASE_DIR=/home/irsa/emu_database</code></li>
+<li>Specify the path of the EMU database with the following line as an action: <code>export EMU_DATABASE_DIR=/SERVER/emu_database</code></li>
 <li>Last line of your script, should be an action that performs the command <code>emu combine-outputs</code> to create a single table containing all Emu output relative abundances in a single directory. Note this function will select all the .tsv files in the provided directory that contain ‘rel-abundance’ in the filename. Use the following options in your <code>emu combine-outputs</code> command:
 <ul>
 <li><code>--counts output</code> estimated counts rather than relative abundance percentage in combined table. Only includes Emu relative abundance outputs that already have ‘estimated counts’</li>
@@ -493,7 +493,7 @@ mamba activate /home/irsa/miniconda3/envs/emu</p>
 <span id="cb33-2"><a href="s-analysis.html#cb33-2" tabindex="-1"></a></span>
 <span id="cb33-3"><a href="s-analysis.html#cb33-3" tabindex="-1"></a><span class="co"># mamba activate /home/irsa/miniconda3/envs/emu</span></span>
 <span id="cb33-4"><a href="s-analysis.html#cb33-4" tabindex="-1"></a></span>
-<span id="cb33-5"><a href="s-analysis.html#cb33-5" tabindex="-1"></a><span class="bu">export</span> <span class="va">EMU_DATABASE_DIR</span><span class="op">=</span>/home/irsa/emu_database</span>
+<span id="cb33-5"><a href="s-analysis.html#cb33-5" tabindex="-1"></a><span class="bu">export</span> <span class="va">EMU_DATABASE_DIR</span><span class="op">=</span>/SERVER/emu_database</span>
 <span id="cb33-6"><a href="s-analysis.html#cb33-6" tabindex="-1"></a></span>
 <span id="cb33-7"><a href="s-analysis.html#cb33-7" tabindex="-1"></a><span class="cf">for</span> i <span class="kw">in</span> /home/irsa/analisi_16s/output_s02/<span class="pp">*</span>-ss-nf.fastq</span>
 <span id="cb33-8"><a href="s-analysis.html#cb33-8" tabindex="-1"></a><span class="cf">do</span></span>

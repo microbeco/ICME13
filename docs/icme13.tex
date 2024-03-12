@@ -838,7 +838,7 @@ This tool use a method optimized for error-prone full-length reads. However, it 
 
 \url{https://github.com/treangenlab/emu}
 
-To perform this annotation, we need a reference database that contains all the taxonomic information, which was already been downloaded in the following path: \texttt{/home/irsa/emu\_database}
+To perform this annotation, we need a reference database that contains all the taxonomic information, which was already been downloaded in the following path: \texttt{/SERVER/emu\_database}
 
 \emph{Requirement}
 
@@ -874,7 +874,7 @@ To execute this tool, you need to activate the conda environment:
   \begin{itemize}
   \tightlist
   \item
-    Specify the path of the EMU database with the following line as an action: \texttt{export\ EMU\_DATABASE\_DIR=/home/irsa/emu\_database}
+    Specify the path of the EMU database with the following line as an action: \texttt{export\ EMU\_DATABASE\_DIR=/SERVER/emu\_database}
   \item
     Last line of your script, should be an action that performs the command \texttt{emu\ combine-outputs} to create a single table containing all Emu output relative abundances in a single directory. Note this function will select all the .tsv files in the provided directory that contain `rel-abundance' in the filename. Use the following options in your \texttt{emu\ combine-outputs} command:
 
@@ -906,7 +906,7 @@ We can write our actions in the scripts as follows:
 
 \CommentTok{\# mamba activate /home/irsa/miniconda3/envs/emu}
 
-\BuiltInTok{export} \VariableTok{EMU\_DATABASE\_DIR}\OperatorTok{=}\NormalTok{/home/irsa/emu\_database}
+\BuiltInTok{export} \VariableTok{EMU\_DATABASE\_DIR}\OperatorTok{=}\NormalTok{/SERVER/emu\_database}
 
 \ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ /home/irsa/analisi\_16s/output\_s02/}\PreprocessorTok{*}\NormalTok{{-}ss{-}nf.fastq}
 \ControlFlowTok{do}

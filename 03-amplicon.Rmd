@@ -312,7 +312,7 @@ This tool use a method optimized for error-prone full-length reads. However, it 
 
 [https://github.com/treangenlab/emu](https://github.com/treangenlab/emu)
 
-To perform this annotation, we need a reference database that contains all the taxonomic information, which was already been downloaded in the following path: `/home/irsa/emu_database`
+To perform this annotation, we need a reference database that contains all the taxonomic information, which was already been downloaded in the following path: `/SERVER/emu_database`
 
 
 _Requirement_ 
@@ -331,7 +331,7 @@ __STEP TIPS:__
   - `--output-basename <basename_files>` basename of all output files saved in output-dir; default utilizes basename from input file(s)
 - Create the folder for your output files (to use in your script)
 - To perform this step you should create a script (Recommended name: `s03_abundance.sh`), and give it permission to be executed: `chmod u+x s03_abundance.sh`
-  - Specify the path of the EMU database with the following line as an action: `export EMU_DATABASE_DIR=/home/irsa/emu_database`
+  - Specify the path of the EMU database with the following line as an action: `export EMU_DATABASE_DIR=/SERVER/emu_database`
   - Last line of your script, should be an action that performs the command `emu combine-outputs` to create a single table containing all Emu output relative abundances in a single directory. Note this function will select all the .tsv files in the provided directory that contain 'rel-abundance' in the filename. Use the following options in your `emu combine-outputs` command:
     - `--counts output` estimated counts rather than relative abundance percentage in combined table. Only includes Emu relative abundance outputs that already have 'estimated counts'
     - `tax_id` to get results for the most specific taxa level
@@ -354,7 +354,7 @@ We can write our actions in the scripts as follows:
 
 # mamba activate /home/irsa/miniconda3/envs/emu
 
-export EMU_DATABASE_DIR=/home/irsa/emu_database
+export EMU_DATABASE_DIR=/SERVER/emu_database
 
 for i in /home/irsa/analisi_16s/output_s02/*-ss-nf.fastq
 do
