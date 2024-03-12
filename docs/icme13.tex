@@ -607,12 +607,25 @@ To activate a created environment:
 \end{Highlighting}
 \end{Shaded}
 
+\subsubsection{Installing tools}\label{installing-tools}
+
+Most of the bioinformatics packages can be searched in Bioconda at this link \url{https://bioconda.github.io}, but also in \texttt{conda-forge} channel and then we can install them by executing
+
+\begin{verbatim}
+mamba install -c bioconda -c conda-forge nanofilt
+\end{verbatim}
+
 For our practical analysis, conda environments have already been created.
 
-The following environment were created and used:
-16S
-mamba activate /home/irsa/miniconda3/envs/ONTpp
-mamba activate /home/irsa/miniconda3/envs/emu
+The following environment were created:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{mamba\ activate\ /home/irsa/miniconda3/envs/ONTpp}
+\item
+  \texttt{mamba\ activate\ /home/irsa/miniconda3/envs/emu}
+\end{itemize}
 
 \section{Base Calling}\label{base-calling}
 
