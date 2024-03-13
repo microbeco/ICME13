@@ -1,0 +1,315 @@
+# Metagenomics
+
+The metagenomics sequence are produced using a shotgun approach in which each all the gene present inside the samples were sequenced. This sequencing not only extends taxonomic resolution to the species- or strain-level but also provides potential functional information
+
+
+## Reads Quality Check
+
+After the basecalling, on the fastq file the "quality check" of the sequence can be performed using stats.sh, a tool inc
+luded in BBMap/BBTools
+
+### BBMap / `stats.sh`
+
+`stats.sh` - Generates basic assembly statistics such as scaffold count, N50, L50, GC content, gap percent, etc. Works with fasta and fastq only (gzipped is fine).  
+
+[https://github.com/BioInfoTools/BBMap/blob/master/sh/stats.sh](https://github.com/BioInfoTools/BBMap/blob/master/sh/stats.sh)
+
+
+## Assembly
+
+One of the most important step for the metagenomic analysis is the Assembly, in which the reads were compared, aligned and overlapped in order to create longer sequenced called "CONTIGS".
+
+
+### Flye (Metaflye)
+
+
+__Setup Conda Env__
+```
+mamba create -n flye -c conda-forge -c bioconda flye
+```
+
+Flye is a de novo assembler for single molecule sequencing reads using repeat graphs as core data structure. Compared to de Bruijn graphs (which require exact k-mer matches), repeat graphs are built using approximate sequence matches.
+
+[https://github.com/fenderglass/Flye](https://github.com/fenderglass/Flye)
+
+Options used
+
+- `--nano-raw ONT` regular reads
+- `--meta` enables the mode for metagenome/uneven coverage assembly
+- `--out-dir	<outputdir>` Output directory	
+
+
+
+## Read mapping
+
+To quantify the coverage, we map the original input reads to the contig
+
+### Minimap2
+A versatile pairwise aligner for genomic and spliced nucleotide sequences, used for evaluate the coverage of the original reads on each previously created contig using pairwise alignment. 
+
+A report and two charts are generated with complementary information, showing a summary of the DNA-Seq Alignment results.
+
+This page contains information about the reference genome sequences, the input FASTQ files, and a results overview. 
+
+The last section is divided into several subsections: globals, paired information, ACTG content, coverage, mapping quality, insert size, mismatches, and indels.
+
+Minimap2 rates an alignment by the score of the max-scoring sub-segment, excluding introns, and marks the best alignment as primary in SAM.  
+
+Sequence Alignment Map (SAM) is a text-based format originally for storing biological sequences aligned to a reference sequence.
+Practically, SAM is a TAB-delimited text format consisting of a header section and an alignment section. 
+Header lines start with ‘@’, while alignment lines do not.
+
+
+
+[https://github.com/lh3/minimap2](https://github.com/lh3/minimap2)
+
+Example command line
+
+```bash
+minimap2 -ax map-ont ref.fa ont-reads.fq > aln.sam
+```
+
+Options:
+- `map-ont` Align noisy long reads of ~10% error rate to a reference genome. This is the default mode
+
+### samtools
+
+Samtools is a package for reading/writing/editing/indexing/viewing SAM/BAM/CRAM format.
+
+A BAM file (*.bam) is a compressed binary version (BGZF format) of a SAM file that is used to represent aligned sequences. This file can be created starting from a SAM (using `samtools`) file in order to reduce its size. 
+
+```bash
+samtools sort aln.sam -o aln.bam
+```
+
+
+## Binning
+
+In metagenomics, binning is the process of grouping reads or contigs and assigning them to individual genome, called "MAGs" (Metagenome Assembled Genomes).
+
+
+### SemiBin2
+
+
+__Setup Conda Env__
+```
+mamba create -n semibin -c conda-forge -c bioconda semibin
+```
+
+SemiBin is a command line tool for metagenomic binning with semi-supervised siamese neural network using additional information from reference genomes and contigs themselves. 
+It supports single sample, co-assembly, and multi-samples binning modes.
+
+[https://github.com/BigDataBiology/SemiBin](https://github.com/BigDataBiology/SemiBin)
+
+3 Options are available for this tool:
+
+- `single_easy_bin`: Running with single-sample binning
+- `multi_easy_bin`:  Running with multi-sample binning
+- `co-assembly`:  samples are co-assembled first (as if the pool of samples were a single sample) and then bins are constructed from this pool of co-assembled contigs.
+
+You will need the following inputs:
+
+- A contig file (contig.fa in the example below)
+- BAM file(s) from mapping short reads to the contigs, sorted (mapped_reads.sorted.bam in the example below)
+
+The `single_easy_bin` command can be used to produce results in a single step
+
+```bash
+SemiBin2 single_easy_bin --sequencing-type=long_read --input-fasta assembly.fasta --input-bam aln.bam --output output_folder
+```
+
+Alternatively, you can train a new model for that sample, by not passing in the `--environment` flag.
+
+This is the fastest option and should work the best if you have metagenomes from one of our prebuilt habitats (alternatively, you can use the global "habitat" which combines all of them).
+
+```bash
+SemiBin2 single_easy_bin --sequencing-type=long_read --environment human_gut --input-fasta assembly.fasta --input-bam aln.bam --output output_folder 
+```
+
+
+## MAGs Quality Check
+
+As well as the original reads and contigs, also MAGs can be checked to extract the ones that can be considered High Quality.
+
+### CheckM2 
+
+CheckM2 - Rapid assessment of genome bin quality using machine learning
+
+[https://github.com/chklovski/CheckM2](https://github.com/chklovski/CheckM2)
+
+CheckM2 has universally trained machine learning models it applies regardless of taxonomic lineage to predict the completeness and contamination of genomic bins.
+Completeness is the percentage of the mapped genome that were covered by each mag.
+Contamination is the inclusion of foreign sequences on the mags
+
+The strain heterogeneity (SH) index indicates the proportion of the contamination that appears to be from the same or similar strains (as determined with an AAI threshold).
+
+In order to extract the completeness and contamination for each Mags, You will also need to download and install the external DIAMOND database that CheckM2 relies on for rapid annotation.
+
+
+__Setup Conda Env and install CheckM2 Database__
+```bash
+mamba create -n checkm2 -c bioconda -c conda-forge checkm2
+mamba activate checkm2
+
+pip install CheckM2
+
+mkdir -p /path/to/checkm2_database
+checkm2 database --download --path /path/to/checkm2_database/
+
+```
+
+As we can see in the following command, the database path can also be set by using the environmental variable.
+
+
+The main use of CheckM2 is to predict the completeness and contamination of metagenome-assembled genomes (MAGs) 
+
+```bash
+export CHECKM2DB="/path/to/checkm2_database/"
+
+checkm2 predict --threads 64 --input /path/output/output_bins/ --output-directory output_folder
+```
+
+
+## Taxonomic Classification
+
+### GTDB-Tk
+
+#### Setup Conda Env
+```
+mamba create -n gtdbtk -c conda-forge -c bioconda gtdbtk=2.3.2
+```
+
+
+GTDB-tk - assigning taxonomic classifications
+
+[https://github.com/Ecogenomics/GTDBTk](https://github.com/Ecogenomics/GTDBTk)
+
+GTDB-Tk is the software toolkit used for assigning objective taxonomic classifications to bacterial and archaeal genomes based on the Genome Database Taxonomy (GTDB). 
+It is designed to work with recent advances that allow hundreds or thousands of metagenome-assembled genomes (MAGs) to be obtained directly from environmental samples.
+
+GTDB-Tk requires an external database that needs to be downloaded and unarchived:
+
+[https://ecogenomics.github.io/GTDBTk/installing/index.html#gtdb-tk-reference-data](https://ecogenomics.github.io/GTDBTk/installing/index.html#gtdb-tk-reference-data)
+
+To perform the taxonomic classification, we use the workflow function `classify_wf` which consists (internally) of four steps: _ani_screen_, _identify_, _align_, and _classify_
+
+```bash
+gtdbtk classify_wf --genome_dir selected_genomes/ --out_dir classify_wf_out --extension fa --force --cpus 32 --skip_ani_screen --pplacer_cpus 32
+```
+
+Options used:
+
+- `--genome_dir <directory>` directory containing genome files in FASTA format   
+- `--out_dir <directory>` directory to output files
+- `--extension fa` extension of files to process, gz = gzipped
+- `--force` continue processing if an error occurs on a single genome
+- `--skip_ani_screen` Skip the ani_screening step to classify genomes using mash and FastANI
+- `--pplacer_cpus 32` number of CPUs to use during pplacer placement
+
+
+List of output files:
+
+- summary.tsv: Classifications for bacterial and archaeal genomes (see the GTDB-Tk documentation for details). Here we will find:
+  - _fastani_reference_: indicates the accession number of the reference genome (species) to which a user genome was assigned based on ANI and AF. ANI values are only calculated when a query genome is placed within a defined genus and are evaluated for all reference genomes in that genus.
+  - _fastani_reference_radius_: indicates the species-specific ANI circumscription radius of the reference genomes used to determine if a query genome should be classified to the same species as the reference.
+https://ecogenomics.github.io/GTDBTk/files/summary.tsv.html
+  - _fastani_af_: indicates the alignment fraction (AF) between the query and above reference genome.
+  - _closest_placement_reference_: indicates the accession number of the reference genome when a genome is placed on a terminal branch.
+  - _classification_method_: indicates the rule used to classify the genome. 
+- _classify.tree.gz_: Reference tree in Newick format containing query genomes placed with pplacer.
+- _markers_summary.tsv_: A summary of unique, duplicated, and missing markers within the 120 bacterial marker set, or the 122 archaeal marker set for each submitted genome.
+- _msa.fasta.gz_: FASTA file containing MSA of submitted and reference genomes.
+- _filtered.tsv_: A list of genomes with an insufficient number of amino acids in MSA.
+- _log_: Log files.
+- _failed_genomes.tsv_: A list of genomes for which the GTDB-Tk analysis failed, e.g. because Prodigal could not detect any genes.
+- _gtdbtk_summary.tsv_: A summary table of the GTDB-Tk classification results for all bins
+
+The taxonomic classification of each bacterial and archaeal genome is contained in the `[prefix].[domain].summary.tsv` output files.
+
+A strain identifier is used as a placeholder for the genus name when there is no existing genus name and no binomially named representative genome.
+This placeholder genus name is generally derived from the oldest representative genome within the lineage and formed from NCBI organism name or NCBI infraspecific/strain ID.
+
+## Functional Annotation
+
+### Anvi'o
+
+For the final and detailed analysis of the MAGs (both from short and long reads) several specific tool were developed in the last years (i.e. is Anvi'o).
+
+Anvi’o is a comprehensive platform that brings together many aspects of today’s cutting-edge computational strategies of data-enabled microbiology, including genomics, metagenomics, metatranscriptomics, pangenomics, metapangenomics, phylogenomics, and microbial population genetics in an integrated and easy-to-use fashion through extensive interactive visualization capabilities.
+
+[https://anvio.org/](https://anvio.org/)
+
+[https://github.com/merenlab/anvio](https://github.com/merenlab/anvio)
+
+__Setup anvio and download databases__
+```bash
+mamba create -y --name anvio-8 python=3.10
+mamba activate anvio-8
+mamba install -y -c conda-forge -c bioconda python=3.10 \
+        sqlite prodigal idba mcl muscle=3.8.1551 famsa hmmer diamond \
+        blast megahit spades bowtie2 bwa graphviz "samtools>=1.9" \
+        trimal iqtree trnascan-se fasttree vmatch r-base r-tidyverse \
+        r-optparse r-stringi r-magrittr bioconductor-qvalue meme ghostscript
+        
+mamba install -y -c bioconda fastani
+
+curl -L https://github.com/merenlab/anvio/releases/download/v8/anvio-8.tar.gz \
+        --output anvio-8.tar.gz
+       
+sudo apt install build-essential
+pip install anvio-8.tar.gz
+
+
+mkdir -p /SERVER/anvio-db/pfam /SERVER/anvio-db/kegg /SERVER/anvio-db/cazy /SERVER/anvio-db/scg       
+
+anvi-setup-kegg-data --mode KOfam --only-download --kegg-data-dir /SERVER/anvio-db/kegg/
+anvi-setup-pfams --pfam-data-dir /SERVER/anvio-db/pfam/
+anvi-setup-cazymes --cazyme-data-dir /SERVER/anvio-db/cazy/
+anvi-setup-scg-taxonomy --scgs-taxonomy-data-dir /SERVER/anvio-db/scg/ --reset
+````
+
+the following workflow is useful for converting a bunch of genomes into an anvi'o-compatible format. It generates contigs databases from each input FASTA file, and subsequently runs a variety of annotation programs of your choice to populate these databases with some useful information for your downstream work (i.e. functions, single-copy-core genes, taxonomy, etc).
+
+To start things going with this workflow, first ask anvi’o to give you a default workflow-config file for the contigs workflow:
+
+```bash
+anvi-run-workflow -w contigs --get-default-config contigs.json
+```
+
+Used options:
+- `-w contigs` select the different type of "workflow (i.e. contig, metagenome ...)
+- `--get-default-config contigs.json` generate a default config file (.json) for a given workflow
+
+[https://anvio.org/help/main/workflows/contigs/](https://anvio.org/help/main/workflows/contigs/)
+
+Here we create a `file_list.tsv`
+
+```bash
+echo -e "name\tpath" > file_list.tsv && find path/to/selected_genomes -type f -exec sh -c 'echo -e "$(basename "{}" .fa)\t{}"' \; >> file_list.tsv
+```
+
+If everything looks alright, you can run this workflow the following way from the same folder of file_list.tsv:
+
+```bash
+anvi-run-workflow -w contigs -c contigs.json --additional-params --jobs 3
+```
+
+Finally, perform the annotation using one of the pre-loaded database
+
+```bash
+for i in 02_CONTIGS/*.db; # 02_CONTIGS viene generata da anvi-run-workflow
+do
+    echo "$i";
+    anvi-run-cazymes -c $i --cazyme-data-dir path/to/CAZYdb/;
+done
+```
+
+and export the annotation 
+
+```bash
+for i in 02_CONTIGS/*.db; # 02_CONTIGS viene generata da anvi-run-workflow
+do
+    echo "$i";
+    anvi-export-functions -c $i
+done
+````

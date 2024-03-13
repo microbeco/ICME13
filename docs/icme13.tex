@@ -127,7 +127,7 @@
 \makeatother
 \subtitle{Crash course on Nanopore sequencing for microbial ecology}
 \author{Manuela Coci \and Luigi Gallucci \and Davide Corso}
-\date{Last update: 2024-03-12}
+\date{Last update: 2024-03-13}
 
 \begin{document}
 \maketitle
@@ -943,5 +943,663 @@ mkdir -p /home/irsa/analisi_16s/output_s03/
 
 Change its permission:
 \texttt{chmod\ u+x\ s03\_abundance.sh}
+
+\chapter{Metagenomics}\label{metagenomics}
+
+The metagenomics sequence are produced using a shotgun approach in which each all the gene present inside the samples were sequenced. This sequencing not only extends taxonomic resolution to the species- or strain-level but also provides potential functional information
+
+\section{Reads Quality Check}\label{reads-quality-check}
+
+After the basecalling, on the fastq file the ``quality check'' of the sequence can be performed using stats.sh, a tool inc
+luded in BBMap/BBTools
+
+\subsection{\texorpdfstring{BBMap / \texttt{stats.sh}}{BBMap / stats.sh}}\label{bbmap-stats.sh}
+
+\texttt{stats.sh} - Generates basic assembly statistics such as scaffold count, N50, L50, GC content, gap percent, etc. Works with fasta and fastq only (gzipped is fine).
+
+\url{https://github.com/BioInfoTools/BBMap/blob/master/sh/stats.sh}
+
+\section{Assembly}\label{assembly}
+
+One of the most important step for the metagenomic analysis is the Assembly, in which the reads were compared, aligned and overlapped in order to create longer sequenced called ``CONTIGS''.
+
+\subsection{Flye (Metaflye)}\label{flye-metaflye}
+
+\textbf{Setup Conda Env}
+
+\begin{verbatim}
+mamba create -n flye -c conda-forge -c bioconda flye
+\end{verbatim}
+
+Flye is a de novo assembler for single molecule sequencing reads using repeat graphs as core data structure. Compared to de Bruijn graphs (which require exact k-mer matches), repeat graphs are built using approximate sequence matches.
+
+\url{https://github.com/fenderglass/Flye}
+
+Options used
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{-\/-nano-raw\ ONT} regular reads
+\item
+  \texttt{-\/-meta} enables the mode for metagenome/uneven coverage assembly
+\item
+  \texttt{-\/-out-dir\ \ \ \ \textless{}outputdir\textgreater{}} Output directory
+\end{itemize}
+
+\section{Read mapping}\label{read-mapping}
+
+To quantify the coverage, we map the original input reads to the contig
+
+\subsection{Minimap2}\label{minimap2}
+
+A versatile pairwise aligner for genomic and spliced nucleotide sequences, used for evaluate the coverage of the original reads on each previously created contig using pairwise alignment.
+
+A report and two charts are generated with complementary information, showing a summary of the DNA-Seq Alignment results.
+
+This page contains information about the reference genome sequences, the input FASTQ files, and a results overview.
+
+The last section is divided into several subsections: globals, paired information, ACTG content, coverage, mapping quality, insert size, mismatches, and indels.
+
+Minimap2 rates an alignment by the score of the max-scoring sub-segment, excluding introns, and marks the best alignment as primary in SAM.
+
+Sequence Alignment Map (SAM) is a text-based format originally for storing biological sequences aligned to a reference sequence.
+Practically, SAM is a TAB-delimited text format consisting of a header section and an alignment section.
+Header lines start with `@', while alignment lines do not.
+
+\url{https://github.com/lh3/minimap2}
+
+Example command line
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{minimap2} \AttributeTok{{-}ax}\NormalTok{ map{-}ont ref.fa ont{-}reads.fq }\OperatorTok{\textgreater{}}\NormalTok{ aln.sam}
+\end{Highlighting}
+\end{Shaded}
+
+Options:
+- \texttt{map-ont} Align noisy long reads of \textasciitilde10\% error rate to a reference genome. This is the default mode
+
+\subsection{samtools}\label{samtools}
+
+Samtools is a package for reading/writing/editing/indexing/viewing SAM/BAM/CRAM format.
+
+A BAM file (*.bam) is a compressed binary version (BGZF format) of a SAM file that is used to represent aligned sequences. This file can be created starting from a SAM (using \texttt{samtools}) file in order to reduce its size.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{samtools}\NormalTok{ sort aln.sam }\AttributeTok{{-}o}\NormalTok{ aln.bam}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Binning}\label{binning}
+
+In metagenomics, binning is the process of grouping reads or contigs and assigning them to individual genome, called ``MAGs'' (Metagenome Assembled Genomes).
+
+\subsection{SemiBin2}\label{semibin2}
+
+\textbf{Setup Conda Env}
+
+\begin{verbatim}
+mamba create -n semibin -c conda-forge -c bioconda semibin
+\end{verbatim}
+
+SemiBin is a command line tool for metagenomic binning with semi-supervised siamese neural network using additional information from reference genomes and contigs themselves.
+It supports single sample, co-assembly, and multi-samples binning modes.
+
+\url{https://github.com/BigDataBiology/SemiBin}
+
+3 Options are available for this tool:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{single\_easy\_bin}: Running with single-sample binning
+\item
+  \texttt{multi\_easy\_bin}: Running with multi-sample binning
+\item
+  \texttt{co-assembly}: samples are co-assembled first (as if the pool of samples were a single sample) and then bins are constructed from this pool of co-assembled contigs.
+\end{itemize}
+
+You will need the following inputs:
+
+\begin{itemize}
+\tightlist
+\item
+  A contig file (contig.fa in the example below)
+\item
+  BAM file(s) from mapping short reads to the contigs, sorted (mapped\_reads.sorted.bam in the example below)
+\end{itemize}
+
+The \texttt{single\_easy\_bin} command can be used to produce results in a single step
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{SemiBin2}\NormalTok{ single\_easy\_bin }\AttributeTok{{-}{-}sequencing{-}type}\OperatorTok{=}\NormalTok{long\_read }\AttributeTok{{-}{-}input{-}fasta}\NormalTok{ assembly.fasta }\AttributeTok{{-}{-}input{-}bam}\NormalTok{ aln.bam }\AttributeTok{{-}{-}output}\NormalTok{ output\_folder}
+\end{Highlighting}
+\end{Shaded}
+
+Alternatively, you can train a new model for that sample, by not passing in the \texttt{-\/-environment} flag.
+
+This is the fastest option and should work the best if you have metagenomes from one of our prebuilt habitats (alternatively, you can use the global ``habitat'' which combines all of them).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{SemiBin2}\NormalTok{ single\_easy\_bin }\AttributeTok{{-}{-}sequencing{-}type}\OperatorTok{=}\NormalTok{long\_read }\AttributeTok{{-}{-}environment}\NormalTok{ human\_gut }\AttributeTok{{-}{-}input{-}fasta}\NormalTok{ assembly.fasta }\AttributeTok{{-}{-}input{-}bam}\NormalTok{ aln.bam }\AttributeTok{{-}{-}output}\NormalTok{ output\_folder }
+\end{Highlighting}
+\end{Shaded}
+
+\section{MAGs Quality Check}\label{mags-quality-check}
+
+As well as the original reads and contigs, also MAGs can be checked to extract the ones that can be considered High Quality.
+
+\subsection{CheckM2}\label{checkm2}
+
+CheckM2 - Rapid assessment of genome bin quality using machine learning
+
+\url{https://github.com/chklovski/CheckM2}
+
+CheckM2 has universally trained machine learning models it applies regardless of taxonomic lineage to predict the completeness and contamination of genomic bins.
+Completeness is the percentage of the mapped genome that were covered by each mag.
+Contamination is the inclusion of foreign sequences on the mags
+
+The strain heterogeneity (SH) index indicates the proportion of the contamination that appears to be from the same or similar strains (as determined with an AAI threshold).
+
+In order to extract the completeness and contamination for each Mags, You will also need to download and install the external DIAMOND database that CheckM2 relies on for rapid annotation.
+
+\textbf{Setup Conda Env and install CheckM2 Database}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{mamba}\NormalTok{ create }\AttributeTok{{-}n}\NormalTok{ checkm2 }\AttributeTok{{-}c}\NormalTok{ bioconda }\AttributeTok{{-}c}\NormalTok{ conda{-}forge checkm2}
+\ExtensionTok{mamba}\NormalTok{ activate checkm2}
+
+\ExtensionTok{pip}\NormalTok{ install CheckM2}
+
+\FunctionTok{mkdir} \AttributeTok{{-}p}\NormalTok{ /path/to/checkm2\_database}
+\ExtensionTok{checkm2}\NormalTok{ database }\AttributeTok{{-}{-}download} \AttributeTok{{-}{-}path}\NormalTok{ /path/to/checkm2\_database/}
+\end{Highlighting}
+\end{Shaded}
+
+As we can see in the following command, the database path can also be set by using the environmental variable.
+
+The main use of CheckM2 is to predict the completeness and contamination of metagenome-assembled genomes (MAGs)
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{export} \VariableTok{CHECKM2DB}\OperatorTok{=}\StringTok{"/path/to/checkm2\_database/"}
+
+\ExtensionTok{checkm2}\NormalTok{ predict }\AttributeTok{{-}{-}threads}\NormalTok{ 64 }\AttributeTok{{-}{-}input}\NormalTok{ /path/output/output\_bins/ }\AttributeTok{{-}{-}output{-}directory}\NormalTok{ output\_folder}
+\end{Highlighting}
+\end{Shaded}
+
+\section{Taxonomic Classification}\label{taxonomic-classification}
+
+\subsection{GTDB-Tk}\label{gtdb-tk}
+
+\subsubsection{Setup Conda Env}\label{setup-conda-env}
+
+\begin{verbatim}
+mamba create -n gtdbtk -c conda-forge -c bioconda gtdbtk=2.3.2
+\end{verbatim}
+
+GTDB-tk - assigning taxonomic classifications
+
+\url{https://github.com/Ecogenomics/GTDBTk}
+
+GTDB-Tk is the software toolkit used for assigning objective taxonomic classifications to bacterial and archaeal genomes based on the Genome Database Taxonomy (GTDB).
+It is designed to work with recent advances that allow hundreds or thousands of metagenome-assembled genomes (MAGs) to be obtained directly from environmental samples.
+
+GTDB-Tk requires an external database that needs to be downloaded and unarchived:
+
+\url{https://ecogenomics.github.io/GTDBTk/installing/index.html\#gtdb-tk-reference-data}
+
+To perform the taxonomic classification, we use the workflow function \texttt{classify\_wf} which consists (internally) of four steps: \emph{ani\_screen}, \emph{identify}, \emph{align}, and \emph{classify}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{gtdbtk}\NormalTok{ classify\_wf }\AttributeTok{{-}{-}genome\_dir}\NormalTok{ selected\_genomes/ }\AttributeTok{{-}{-}out\_dir}\NormalTok{ classify\_wf\_out }\AttributeTok{{-}{-}extension}\NormalTok{ fa }\AttributeTok{{-}{-}force} \AttributeTok{{-}{-}cpus}\NormalTok{ 32 }\AttributeTok{{-}{-}skip\_ani\_screen} \AttributeTok{{-}{-}pplacer\_cpus}\NormalTok{ 32}
+\end{Highlighting}
+\end{Shaded}
+
+Options used:
+
+\begin{itemize}
+\tightlist
+\item
+  \texttt{-\/-genome\_dir\ \textless{}directory\textgreater{}} directory containing genome files in FASTA format\\
+\item
+  \texttt{-\/-out\_dir\ \textless{}directory\textgreater{}} directory to output files
+\item
+  \texttt{-\/-extension\ fa} extension of files to process, gz = gzipped
+\item
+  \texttt{-\/-force} continue processing if an error occurs on a single genome
+\item
+  \texttt{-\/-skip\_ani\_screen} Skip the ani\_screening step to classify genomes using mash and FastANI
+\item
+  \texttt{-\/-pplacer\_cpus\ 32} number of CPUs to use during pplacer placement
+\end{itemize}
+
+List of output files:
+
+\begin{itemize}
+\tightlist
+\item
+  summary.tsv: Classifications for bacterial and archaeal genomes (see the GTDB-Tk documentation for details). Here we will find:
+
+  \begin{itemize}
+  \tightlist
+  \item
+    \emph{fastani\_reference}: indicates the accession number of the reference genome (species) to which a user genome was assigned based on ANI and AF. ANI values are only calculated when a query genome is placed within a defined genus and are evaluated for all reference genomes in that genus.
+  \item
+    \emph{fastani\_reference\_radius}: indicates the species-specific ANI circumscription radius of the reference genomes used to determine if a query genome should be classified to the same species as the reference.
+    \url{https://ecogenomics.github.io/GTDBTk/files/summary.tsv.html}
+  \item
+    \emph{fastani\_af}: indicates the alignment fraction (AF) between the query and above reference genome.
+  \item
+    \emph{closest\_placement\_reference}: indicates the accession number of the reference genome when a genome is placed on a terminal branch.
+  \item
+    \emph{classification\_method}: indicates the rule used to classify the genome.
+  \end{itemize}
+\item
+  \emph{classify.tree.gz}: Reference tree in Newick format containing query genomes placed with pplacer.
+\item
+  \emph{markers\_summary.tsv}: A summary of unique, duplicated, and missing markers within the 120 bacterial marker set, or the 122 archaeal marker set for each submitted genome.
+\item
+  \emph{msa.fasta.gz}: FASTA file containing MSA of submitted and reference genomes.
+\item
+  \emph{filtered.tsv}: A list of genomes with an insufficient number of amino acids in MSA.
+\item
+  \emph{log}: Log files.
+\item
+  \emph{failed\_genomes.tsv}: A list of genomes for which the GTDB-Tk analysis failed, e.g.~because Prodigal could not detect any genes.
+\item
+  \emph{gtdbtk\_summary.tsv}: A summary table of the GTDB-Tk classification results for all bins
+\end{itemize}
+
+The taxonomic classification of each bacterial and archaeal genome is contained in the \texttt{{[}prefix{]}.{[}domain{]}.summary.tsv} output files.
+
+A strain identifier is used as a placeholder for the genus name when there is no existing genus name and no binomially named representative genome.
+This placeholder genus name is generally derived from the oldest representative genome within the lineage and formed from NCBI organism name or NCBI infraspecific/strain ID.
+
+\section{Functional Annotation}\label{functional-annotation}
+
+\subsection{Anvi'o}\label{anvio}
+
+For the final and detailed analysis of the MAGs (both from short and long reads) several specific tool were developed in the last years (i.e.~is Anvi'o).
+
+Anvi'o is a comprehensive platform that brings together many aspects of today's cutting-edge computational strategies of data-enabled microbiology, including genomics, metagenomics, metatranscriptomics, pangenomics, metapangenomics, phylogenomics, and microbial population genetics in an integrated and easy-to-use fashion through extensive interactive visualization capabilities.
+
+\url{https://anvio.org/}
+
+\url{https://github.com/merenlab/anvio}
+
+\textbf{Setup anvio and download databases}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{mamba}\NormalTok{ create }\AttributeTok{{-}y} \AttributeTok{{-}{-}name}\NormalTok{ anvio{-}8 python=3.10}
+\ExtensionTok{mamba}\NormalTok{ activate anvio{-}8}
+\ExtensionTok{mamba}\NormalTok{ install }\AttributeTok{{-}y} \AttributeTok{{-}c}\NormalTok{ conda{-}forge }\AttributeTok{{-}c}\NormalTok{ bioconda python=3.10 }\DataTypeTok{\textbackslash{}}
+\NormalTok{        sqlite prodigal idba mcl muscle=3.8.1551 famsa hmmer diamond }\DataTypeTok{\textbackslash{}}
+\NormalTok{        blast megahit spades bowtie2 bwa graphviz }\StringTok{"samtools\textgreater{}=1.9"} \DataTypeTok{\textbackslash{}}
+\NormalTok{        trimal iqtree trnascan{-}se fasttree vmatch r{-}base r{-}tidyverse }\DataTypeTok{\textbackslash{}}
+\NormalTok{        r{-}optparse r{-}stringi r{-}magrittr bioconductor{-}qvalue meme ghostscript}
+        
+\ExtensionTok{mamba}\NormalTok{ install }\AttributeTok{{-}y} \AttributeTok{{-}c}\NormalTok{ bioconda fastani}
+
+\ExtensionTok{curl} \AttributeTok{{-}L}\NormalTok{ https://github.com/merenlab/anvio/releases/download/v8/anvio{-}8.tar.gz }\DataTypeTok{\textbackslash{}}
+        \AttributeTok{{-}{-}output}\NormalTok{ anvio{-}8.tar.gz}
+       
+\FunctionTok{sudo}\NormalTok{ apt install build{-}essential}
+\ExtensionTok{pip}\NormalTok{ install anvio{-}8.tar.gz}
+
+
+\FunctionTok{mkdir} \AttributeTok{{-}p}\NormalTok{ /SERVER/anvio{-}db/pfam /SERVER/anvio{-}db/kegg /SERVER/anvio{-}db/cazy /SERVER/anvio{-}db/scg       }
+
+\ExtensionTok{anvi{-}setup{-}kegg{-}data} \AttributeTok{{-}{-}mode}\NormalTok{ KOfam }\AttributeTok{{-}{-}only{-}download} \AttributeTok{{-}{-}kegg{-}data{-}dir}\NormalTok{ /SERVER/anvio{-}db/kegg/}
+\ExtensionTok{anvi{-}setup{-}pfams} \AttributeTok{{-}{-}pfam{-}data{-}dir}\NormalTok{ /SERVER/anvio{-}db/pfam/}
+\ExtensionTok{anvi{-}setup{-}cazymes} \AttributeTok{{-}{-}cazyme{-}data{-}dir}\NormalTok{ /SERVER/anvio{-}db/cazy/}
+\ExtensionTok{anvi{-}setup{-}scg{-}taxonomy} \AttributeTok{{-}{-}scgs{-}taxonomy{-}data{-}dir}\NormalTok{ /SERVER/anvio{-}db/scg/ }\AttributeTok{{-}{-}reset}
+\end{Highlighting}
+\end{Shaded}
+
+the following workflow is useful for converting a bunch of genomes into an anvi'o-compatible format. It generates contigs databases from each input FASTA file, and subsequently runs a variety of annotation programs of your choice to populate these databases with some useful information for your downstream work (i.e.~functions, single-copy-core genes, taxonomy, etc).
+
+To start things going with this workflow, first ask anvi'o to give you a default workflow-config file for the contigs workflow:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{anvi{-}run{-}workflow} \AttributeTok{{-}w}\NormalTok{ contigs }\AttributeTok{{-}{-}get{-}default{-}config}\NormalTok{ contigs.json}
+\end{Highlighting}
+\end{Shaded}
+
+Used options:
+- \texttt{-w\ contigs} select the different type of ``workflow (i.e.~contig, metagenome \ldots)
+- \texttt{-\/-get-default-config\ contigs.json} generate a default config file (.json) for a given workflow
+
+\url{https://anvio.org/help/main/workflows/contigs/}
+
+Here we create a \texttt{file\_list.tsv}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\BuiltInTok{echo} \AttributeTok{{-}e} \StringTok{"name\textbackslash{}tpath"} \OperatorTok{\textgreater{}}\NormalTok{ file\_list.tsv }\KeywordTok{\&\&} \FunctionTok{find}\NormalTok{ path/to/selected\_genomes }\AttributeTok{{-}type}\NormalTok{ f }\AttributeTok{{-}exec}\NormalTok{ sh }\AttributeTok{{-}c} \StringTok{\textquotesingle{}echo {-}e "$(basename "\{\}" .fa)\textbackslash{}t\{\}"\textquotesingle{}} \DataTypeTok{\textbackslash{};} \OperatorTok{\textgreater{}\textgreater{}}\NormalTok{ file\_list.tsv}
+\end{Highlighting}
+\end{Shaded}
+
+If everything looks alright, you can run this workflow the following way from the same folder of file\_list.tsv:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{anvi{-}run{-}workflow} \AttributeTok{{-}w}\NormalTok{ contigs }\AttributeTok{{-}c}\NormalTok{ contigs.json }\AttributeTok{{-}{-}additional{-}params} \AttributeTok{{-}{-}jobs}\NormalTok{ 3}
+\end{Highlighting}
+\end{Shaded}
+
+Finally, perform the annotation using one of the pre-loaded database
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ 02\_CONTIGS/}\PreprocessorTok{*}\NormalTok{.db}\KeywordTok{;} \CommentTok{\# 02\_CONTIGS viene generata da anvi{-}run{-}workflow}
+\ControlFlowTok{do}
+    \BuiltInTok{echo} \StringTok{"}\VariableTok{$i}\StringTok{"}\KeywordTok{;}
+    \ExtensionTok{anvi{-}run{-}cazymes} \AttributeTok{{-}c} \VariableTok{$i} \AttributeTok{{-}{-}cazyme{-}data{-}dir}\NormalTok{ path/to/CAZYdb/}\KeywordTok{;}
+\ControlFlowTok{done}
+\end{Highlighting}
+\end{Shaded}
+
+and export the annotation
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ControlFlowTok{for}\NormalTok{ i }\KeywordTok{in}\NormalTok{ 02\_CONTIGS/}\PreprocessorTok{*}\NormalTok{.db}\KeywordTok{;} \CommentTok{\# 02\_CONTIGS viene generata da anvi{-}run{-}workflow}
+\ControlFlowTok{do}
+    \BuiltInTok{echo} \StringTok{"}\VariableTok{$i}\StringTok{"}\KeywordTok{;}
+    \ExtensionTok{anvi{-}export{-}functions} \AttributeTok{{-}c} \VariableTok{$i}
+\ControlFlowTok{done}
+\end{Highlighting}
+\end{Shaded}
+
+\chapter{Our Metagenomic practice}\label{our-metagenomic-practice}
+
+In our practice we will cover the functional annotation on metagenomics data, both on assembly based and MAGs based. Due to resources and time limits we will try to run Prodigal, HMMer and Quast.
+
+For the assembly-based analysis, we have the assembly fasta file located in the following path: \texttt{/SERVER/mg\_data/Assembly\_metaflye/assembly.fasta}
+
+\section{ORF Prediction}\label{orf-prediction}
+
+Fast, reliable protein-coding gene prediction for prokaryotic genomes.
+
+\url{https://github.com/hyattpd/Prodigal}
+
+\subsection{Prodigal}\label{prodigal}
+
+\textbf{Setup the conda env}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{mamba}\NormalTok{ create }\AttributeTok{{-}n}\NormalTok{ prodigal }\AttributeTok{{-}c}\NormalTok{ bioconda }\AttributeTok{{-}c}\NormalTok{ conda{-}forge prodigal}
+\end{Highlighting}
+\end{Shaded}
+
+Tips:
+
+\begin{itemize}
+\tightlist
+\item
+  Input: Prodigal run using a fasta file, for example the one represented the assembly
+\item
+  Output: You should obtains a GFF file and an Aminoacidic Fasta file of the predicted orfs
+\end{itemize}
+
+\textbf{{[}SPOILER{]}} - Scripts that we will use
+
+We create an empty file called \texttt{s01\_prodigal.sh}
+
+\texttt{touch\ s01\_prodigal.sh}
+
+We can write our actions in the scripts as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#!/bin/bash}
+
+\VariableTok{assembly}\OperatorTok{=}\StringTok{"/SERVER/mg\_data/Assembly\_metaflye/assembly.fasta"}
+
+
+\VariableTok{outfolder}\OperatorTok{=}\StringTok{"output\_s01"}
+
+\FunctionTok{mkdir} \AttributeTok{{-}p} \VariableTok{$outfolder}
+
+\ExtensionTok{prodigal} \AttributeTok{{-}i} \VariableTok{$\{assembly\}} \DataTypeTok{\textbackslash{}}
+    \AttributeTok{{-}o} \VariableTok{$\{outfolder\}}\NormalTok{/genes.gff }\DataTypeTok{\textbackslash{}}
+    \AttributeTok{{-}a} \VariableTok{$\{outfolder\}}\NormalTok{/protein\_translations.faa }\DataTypeTok{\textbackslash{}}
+    \AttributeTok{{-}f}\NormalTok{ gff }\DataTypeTok{\textbackslash{}}
+    \AttributeTok{{-}p}\NormalTok{ meta}
+\end{Highlighting}
+\end{Shaded}
+
+Create output directory for this script (Change \texttt{irsa} with your \texttt{utenteX} name)
+
+\begin{verbatim}
+mkdir -p /home/irsa/analisi_MG/output_s01/
+\end{verbatim}
+
+Change its permission:
+\texttt{chmod\ u+x\ s01\_prodigal.sh}
+
+Execute it:
+\texttt{./s01\_prodigal.sh}
+
+\section{Hidden Markov Model}\label{hidden-markov-model}
+
+HMMER is a software package that provides tools for making probabilistic models of protein and DNA sequence domain families -- called profile hidden Markov models, profile HMMs, or just profiles.
+
+HMMER is used for searching sequence databases for sequence homologs, and for making sequence alignments. It implements methods using probabilistic models called profile hidden Markov models (profile HMMs).
+
+\url{https://github.com/EBI-Metagenomics/hmmer3}
+
+\subsection{hmmer}\label{hmmer}
+
+\textbf{Setup the conda env}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{mamba}\NormalTok{ create }\AttributeTok{{-}n}\NormalTok{ hmmer }\AttributeTok{{-}c}\NormalTok{ bioconda }\AttributeTok{{-}c}\NormalTok{ conda{-}forge hmmer}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Split PFAM files}\label{split-pfam-files}
+
+Pfam is a comprehensive collection of protein domains and families, represented as multiple sequence alignments and as profile hidden Markov models.
+
+Download the file \texttt{Pfam-A.hmm.gz} from the PFAM FTP Server: \url{https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/}
+
+\paragraph*{\texorpdfstring{\textbf{Step 0}}{Step 0}}\label{step-0}
+\addcontentsline{toc}{paragraph}{\textbf{Step 0}}
+
+De-Compress the file \texttt{Pfam-A.hmm.gz}. How will you do it?
+TIPS:
+
+\begin{itemize}
+\tightlist
+\item
+  Search on google
+\end{itemize}
+
+\textbf{{[}SPOILER{]}} - Scripts that we will use
+
+\texttt{gzip\ -d\ Pfam-A.hmm.gz}
+
+\paragraph*{\texorpdfstring{\textbf{Step 1}}{Step 1}}\label{step-1}
+\addcontentsline{toc}{paragraph}{\textbf{Step 1}}
+
+Extract the name of the models in the PFAM file \textbf{(Advanced Task)}
+
+\textbf{{[}SPOILER{]}} - Scripts that we will use
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{grep} \StringTok{"\^{}NAME"}\NormalTok{ Pfam{-}A.hmm }\KeywordTok{|} \FunctionTok{awk} \StringTok{\textquotesingle{}\{print $2\}\textquotesingle{}} \OperatorTok{\textgreater{}}\NormalTok{ all\_names.txt}
+\end{Highlighting}
+\end{Shaded}
+
+\paragraph*{\texorpdfstring{\textbf{Step 2}}{Step 2}}\label{step-2}
+\addcontentsline{toc}{paragraph}{\textbf{Step 2}}
+
+Using the retrieved names, extract the corresponding models into multiple files.
+
+Command to use: \texttt{hmmfetch} from the hmmer tools
+
+\textbf{{[}SPOILER{]}} - Scripts that we will use
+
+We create an empty file called \texttt{s02\_splitPFAM.sh}
+
+\texttt{touch\ s02\_splitPFAM.sh}
+
+We can write our actions in the scripts as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#!/bin/bash}
+
+\VariableTok{outfolder}\OperatorTok{=}\StringTok{"output\_s02"}
+
+\ControlFlowTok{while} \BuiltInTok{read} \VariableTok{name}
+\ControlFlowTok{do}
+    \BuiltInTok{echo} \StringTok{"}\VariableTok{$name}\StringTok{"}
+    \ExtensionTok{hmmfetch}\NormalTok{ Pfam{-}A.hmm }\VariableTok{$name} \OperatorTok{\textgreater{}} \StringTok{"}\VariableTok{$\{outfolder\}}\StringTok{/}\VariableTok{$name}\StringTok{.hmm"}
+\ControlFlowTok{done} \OperatorTok{\textless{}}\NormalTok{ 500\_names.txt}
+\end{Highlighting}
+\end{Shaded}
+
+Create output directory for this script (Change \texttt{irsa} with your \texttt{utenteX} name)
+
+\begin{verbatim}
+mkdir -p /home/irsa/analisi_MG/output_s02/
+\end{verbatim}
+
+Change its permission:
+\texttt{chmod\ u+x\ s02\_splitPFAM.sh}
+
+Execute it:
+\texttt{./s02\_splitPFAM.sh}
+
+\subsubsection{\texorpdfstring{\texttt{hmmsearch}}{hmmsearch}}\label{hmmsearch}
+
+Now execute \texttt{hmmsearch} to the retrieved ORFs to annotate them based on the extracted models.
+
+If you are working on the CNR system, use only 1 cpu.
+
+\textbf{{[}SPOILER{]}} - Scripts that we will use
+
+We create an empty file called \texttt{s03\_hmmsearch.sh}
+
+\texttt{touch\ s03\_hmmsearch.sh}
+
+We can write our actions in the scripts as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#!/bin/bash}
+
+
+\VariableTok{outfolder}\OperatorTok{=}\StringTok{"output\_s03"}
+
+\ControlFlowTok{while} \BuiltInTok{read} \VariableTok{name}\KeywordTok{;} \ControlFlowTok{do}
+    \BuiltInTok{echo} \StringTok{"}\VariableTok{$name}\StringTok{"}
+
+    \VariableTok{model\_folder}\OperatorTok{=}\StringTok{"}\VariableTok{$\{outfolder\}}\StringTok{/}\VariableTok{$\{name\}}\StringTok{"}
+    \FunctionTok{mkdir} \AttributeTok{{-}p} \VariableTok{$\{model\_folder\}}
+
+    \VariableTok{model}\OperatorTok{=}\StringTok{"output\_s02/}\VariableTok{$\{name\}}\StringTok{.hmm"}
+
+    \ExtensionTok{hmmsearch} \AttributeTok{{-}{-}tblout} \VariableTok{$\{model\_folder\}}\NormalTok{/table.out }\AttributeTok{{-}o} \VariableTok{$\{model\_folder\}}\NormalTok{/align.out }\AttributeTok{{-}E}\NormalTok{ 0.000001 }\AttributeTok{{-}{-}cpu}\NormalTok{ 1 }\AttributeTok{{-}{-}notextw} \VariableTok{$\{model\}}\NormalTok{ output\_s01/protein\_translations.faa}
+
+\ControlFlowTok{done} \OperatorTok{\textless{}}\NormalTok{ 500\_names.txt}
+\end{Highlighting}
+\end{Shaded}
+
+Create output directory for this script (Change \texttt{irsa} with your \texttt{utenteX} name)
+
+\begin{verbatim}
+mkdir -p /home/irsa/analisi_MG/output_s03/
+\end{verbatim}
+
+Change its permission:
+\texttt{chmod\ u+x\ s03\_hmmsearch.sh}
+
+Execute it:
+\texttt{./s03\_hmmsearch.sh}
+
+\section{Assembly Quality Check}\label{assembly-quality-check}
+
+\subsection{Quast}\label{quast}
+
+The QUAST package works both with and without reference genomes. However, it is much more informative if at least a close reference genome is provided along with the assemblies. The tool accepts multiple assemblies, thus is suitable for comparison.
+
+\url{https://github.com/ablab/quast}
+
+\textbf{Setup the conda env}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\ExtensionTok{mamba}\NormalTok{ create }\AttributeTok{{-}n}\NormalTok{ quast }\AttributeTok{{-}c}\NormalTok{ bioconda }\AttributeTok{{-}c}\NormalTok{ conda{-}forge quast}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{{[}SPOILER{]}} - Scripts that we will use
+
+We create an empty file called \texttt{s04\_quast.sh}
+
+\texttt{touch\ s04\_quast.sh}
+
+We can write our actions in the scripts as follows:
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#!/bin/bash}
+
+\VariableTok{outfolder}\OperatorTok{=}\StringTok{"output\_s04"}
+
+
+\ExtensionTok{quast} \AttributeTok{{-}{-}labels}\NormalTok{ flye }\AttributeTok{{-}{-}contig{-}thresholds}\NormalTok{ 0,1000,10000,100000,1000000 }\AttributeTok{{-}{-}threads}\NormalTok{ 2 }\AttributeTok{{-}o} \VariableTok{$\{outfolder\}}\NormalTok{ /SERVER/mg\_data/Assembly\_metaflye/assembly.fasta}
+\end{Highlighting}
+\end{Shaded}
+
+Create output directory for this script (Change \texttt{irsa} with your \texttt{utenteX} name)
+
+\begin{verbatim}
+mkdir -p /home/irsa/analisi_MG/output_s04/
+\end{verbatim}
+
+Change its permission:
+\texttt{chmod\ u+x\ s04\_quast.sh}
+
+Execute it:
+\texttt{./s04\_quast.sh}
+
+What if you use \texttt{metaquast}?
+
+\textbf{{[}SPOILER{]}} - Scripts that we will use
+
+MetaQUAST the extension for metagenomic datasets, it evaluates and compares metagenome assemblies based on alignments to close references. It is based on QUAST genome quality assessment tool, but addresses features specific for metagenome datasets.
+
+\section{Web Tools Annotations}\label{web-tools-annotations}
+
+\begin{itemize}
+\tightlist
+\item
+  KOFAM Koala \url{https://www.genome.jp/tools/kofamkoala/}
+\item
+  EGGNOG \url{http://eggnog-mapper.embl.de}
+\item
+  DBcan \url{https://bcb.unl.edu/dbCAN2/blast.php}
+\end{itemize}
+
+\section{Functional Annotation - MAGs based}\label{functional-annotation---mags-based}
+
+If you have finished, try to run the same analysis on each MAGs located in:
+\texttt{/SERVER/mg\_data/mg/genomi\_per\_annotazione}
 
 \end{document}

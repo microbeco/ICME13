@@ -1,0 +1,298 @@
+# Our Metagenomic practice
+
+In our practice we will cover the functional annotation on metagenomics data, both on assembly based and MAGs based. Due to resources and time limits we will try to run Prodigal, HMMer and Quast.
+
+For the assembly-based analysis, we have the assembly fasta file located in the following path: `/SERVER/mg_data/Assembly_metaflye/assembly.fasta`
+
+## ORF Prediction
+
+Fast, reliable protein-coding gene prediction for prokaryotic genomes.
+
+[https://github.com/hyattpd/Prodigal](https://github.com/hyattpd/Prodigal)
+
+
+### Prodigal
+
+__Setup the conda env__
+```bash
+mamba create -n prodigal -c bioconda -c conda-forge prodigal
+```
+
+Tips: 
+
+- Input: Prodigal run using a fasta file, for example the one represented the assembly
+- Output: You should obtains a GFF file and an Aminoacidic Fasta file of the predicted orfs
+
+
+
+<details>
+<summary>
+__[SPOILER]__ - Scripts that we will use
+</summary>
+
+We create an empty file called `s01_prodigal.sh`
+
+`touch s01_prodigal.sh`
+
+We can write our actions in the scripts as follows:
+```bash
+#!/bin/bash
+
+assembly="/SERVER/mg_data/Assembly_metaflye/assembly.fasta"
+
+
+outfolder="output_s01"
+
+mkdir -p $outfolder
+
+prodigal -i ${assembly} \
+    -o ${outfolder}/genes.gff \
+    -a ${outfolder}/protein_translations.faa \
+    -f gff \
+    -p meta
+
+```
+
+Create output directory for this script (Change `irsa` with your `utenteX` name)
+```
+mkdir -p /home/irsa/analisi_MG/output_s01/
+```
+
+Change its permission:
+`chmod u+x s01_prodigal.sh`
+
+Execute it:
+`./s01_prodigal.sh`
+
+</details>
+
+
+
+
+
+## Hidden Markov Model
+
+HMMER is a software package that provides tools for making probabilistic models of protein and DNA sequence domain families – called profile hidden Markov models, profile HMMs, or just profiles.
+
+HMMER is used for searching sequence databases for sequence homologs, and for making sequence alignments. It implements methods using probabilistic models called profile hidden Markov models (profile HMMs).
+
+[https://github.com/EBI-Metagenomics/hmmer3](https://github.com/EBI-Metagenomics/hmmer3)
+
+### hmmer
+
+__Setup the conda env__
+```bash
+mamba create -n hmmer -c bioconda -c conda-forge hmmer
+```
+
+
+#### Split PFAM files
+
+Pfam is a comprehensive collection of protein domains and families, represented as multiple sequence alignments and as profile hidden Markov models. 
+
+Download the file `Pfam-A.hmm.gz` from the PFAM FTP Server: [https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/](https://ftp.ebi.ac.uk/pub/databases/Pfam/current_release/)
+
+##### __Step 0__ {-}
+
+De-Compress the file `Pfam-A.hmm.gz`. How will you do it? 
+TIPS: 
+
+- Search on google
+
+
+<details>
+<summary>
+__[SPOILER]__ - Scripts that we will use
+</summary>
+
+`gzip -d Pfam-A.hmm.gz`
+
+</details>
+
+
+
+##### __Step 1__ {-}
+
+Extract the name of the models in the PFAM file __(Advanced Task)__
+
+
+<details>
+<summary>
+__[SPOILER]__ - Scripts that we will use
+</summary>
+
+```bash
+grep "^NAME" Pfam-A.hmm | awk '{print $2}' > all_names.txt
+```
+
+</details>
+
+
+##### __Step 2__ {-}
+
+Using the retrieved names, extract the corresponding models into multiple files.
+
+Command to use: `hmmfetch` from the hmmer tools
+
+
+
+<details>
+<summary>
+__[SPOILER]__ - Scripts that we will use
+</summary>
+
+We create an empty file called `s02_splitPFAM.sh`
+
+`touch s02_splitPFAM.sh`
+
+We can write our actions in the scripts as follows:
+```bash
+#!/bin/bash
+
+outfolder="output_s02"
+
+while read name
+do
+    echo "$name"
+    hmmfetch Pfam-A.hmm $name > "${outfolder}/$name.hmm"
+done < 500_names.txt
+```
+
+Create output directory for this script (Change `irsa` with your `utenteX` name)
+```
+mkdir -p /home/irsa/analisi_MG/output_s02/
+```
+
+Change its permission:
+`chmod u+x s02_splitPFAM.sh`
+
+Execute it:
+`./s02_splitPFAM.sh`
+
+</details>
+
+
+#### `hmmsearch`
+
+Now execute `hmmsearch` to the retrieved ORFs to annotate them based on the extracted models.
+
+If you are working on the CNR system, use only 1 cpu.
+
+
+
+
+<details>
+<summary>
+__[SPOILER]__ - Scripts that we will use
+</summary>
+
+We create an empty file called `s03_hmmsearch.sh`
+
+`touch s03_hmmsearch.sh`
+
+We can write our actions in the scripts as follows:
+```bash
+#!/bin/bash
+
+
+outfolder="output_s03"
+
+while read name; do
+    echo "$name"
+
+    model_folder="${outfolder}/${name}"
+    mkdir -p ${model_folder}
+
+    model="output_s02/${name}.hmm"
+
+    hmmsearch --tblout ${model_folder}/table.out -o ${model_folder}/align.out -E 0.000001 --cpu 1 --notextw ${model} output_s01/protein_translations.faa
+
+done < 500_names.txt
+
+```
+
+Create output directory for this script (Change `irsa` with your `utenteX` name)
+```
+mkdir -p /home/irsa/analisi_MG/output_s03/
+```
+
+Change its permission:
+`chmod u+x s03_hmmsearch.sh`
+
+Execute it:
+`./s03_hmmsearch.sh`
+
+</details>
+
+
+## Assembly Quality Check
+
+### Quast
+
+The QUAST package works both with and without reference genomes. However, it is much more informative if at least a close reference genome is provided along with the assemblies. The tool accepts multiple assemblies, thus is suitable for comparison.
+
+[https://github.com/ablab/quast](https://github.com/ablab/quast)
+
+__Setup the conda env__
+```bash
+mamba create -n quast -c bioconda -c conda-forge quast
+```
+
+<details>
+<summary>
+__[SPOILER]__ - Scripts that we will use
+</summary>
+
+We create an empty file called `s04_quast.sh`
+
+`touch s04_quast.sh`
+
+We can write our actions in the scripts as follows:
+```bash
+#!/bin/bash
+
+outfolder="output_s04"
+
+
+quast --labels flye --contig-thresholds 0,1000,10000,100000,1000000 --threads 2 -o ${outfolder} /SERVER/mg_data/Assembly_metaflye/assembly.fasta
+
+```
+
+Create output directory for this script (Change `irsa` with your `utenteX` name)
+```
+mkdir -p /home/irsa/analisi_MG/output_s04/
+```
+
+Change its permission:
+`chmod u+x s04_quast.sh`
+
+Execute it:
+`./s04_quast.sh`
+
+</details>
+
+What if you use `metaquast`?
+
+
+<details>
+<summary>
+__[SPOILER]__ - Scripts that we will use
+</summary>
+
+MetaQUAST the extension for metagenomic datasets, it evaluates and compares metagenome assemblies based on alignments to close references. It is based on QUAST genome quality assessment tool, but addresses features specific for metagenome datasets.
+
+</details>
+
+
+
+## Web Tools Annotations
+
+- KOFAM Koala [https://www.genome.jp/tools/kofamkoala/](https://www.genome.jp/tools/kofamkoala/)
+- EGGNOG [http://eggnog-mapper.embl.de](http://eggnog-mapper.embl.de)
+- DBcan [https://bcb.unl.edu/dbCAN2/blast.php](https://bcb.unl.edu/dbCAN2/blast.php)
+
+
+## Functional Annotation - MAGs based
+
+If you have finished, try to run the same analysis on each MAGs located in:
+`/SERVER/mg_data/mg/genomi_per_annotazione`
