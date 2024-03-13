@@ -2,7 +2,7 @@
 
 In our practice we will cover the functional annotation on metagenomics data, both on assembly based and MAGs based. Due to resources and time limits we will try to run Prodigal, HMMer and Quast.
 
-For the assembly-based analysis, we have the assembly fasta file located in the following path: `/SERVER/mg_data/Assembly_metaflye/assembly.fasta`
+For the assembly-based analysis, we have the assembly fasta file located in the following path: `/SERVER/mg_data/mg/Assembly_metaflye/assembly.fasta`
 
 ## ORF Prediction
 
@@ -38,7 +38,7 @@ We can write our actions in the scripts as follows:
 ```bash
 #!/bin/bash
 
-assembly="/SERVER/mg_data/Assembly_metaflye/assembly.fasta"
+assembly="/SERVER/mg_data/mg/Assembly_metaflye/assembly.fasta"
 
 
 outfolder="output_s01"
