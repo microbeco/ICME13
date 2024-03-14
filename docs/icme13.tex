@@ -127,7 +127,7 @@
 \makeatother
 \subtitle{Crash course on Nanopore sequencing for microbial ecology}
 \author{Manuela Coci \and Luigi Gallucci \and Davide Corso}
-\date{Last update: 2024-03-13}
+\date{Last update: 2024-03-14}
 
 \begin{document}
 \maketitle
@@ -1469,7 +1469,7 @@ We can write our actions in the scripts as follows:
 \ControlFlowTok{do}
     \BuiltInTok{echo} \StringTok{"}\VariableTok{$name}\StringTok{"}
     \ExtensionTok{hmmfetch}\NormalTok{ Pfam{-}A.hmm }\VariableTok{$name} \OperatorTok{\textgreater{}} \StringTok{"}\VariableTok{$\{outfolder\}}\StringTok{/}\VariableTok{$name}\StringTok{.hmm"}
-\ControlFlowTok{done} \OperatorTok{\textless{}}\NormalTok{ 500\_names.txt}
+\ControlFlowTok{done} \OperatorTok{\textless{}}\NormalTok{ all\_names.txt}
 \end{Highlighting}
 \end{Shaded}
 
@@ -1484,6 +1484,10 @@ Change its permission:
 
 Execute it:
 \texttt{./s02\_splitPFAM.sh}
+
+As we can see, the run time of \texttt{hmmfetch} is very long. Try to execute the script only for 500 or 1000 extracted HMM names.
+
+How can you do it?
 
 \subsubsection{\texorpdfstring{\texttt{hmmsearch}}{hmmsearch}}\label{hmmsearch}
 

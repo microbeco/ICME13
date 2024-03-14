@@ -367,7 +367,7 @@ TIPS:</p>
 <span id="cb57-6"><a href="our-metagenomic-practice.html#cb57-6" tabindex="-1"></a><span class="cf">do</span></span>
 <span id="cb57-7"><a href="our-metagenomic-practice.html#cb57-7" tabindex="-1"></a>    <span class="bu">echo</span> <span class="st">&quot;</span><span class="va">$name</span><span class="st">&quot;</span></span>
 <span id="cb57-8"><a href="our-metagenomic-practice.html#cb57-8" tabindex="-1"></a>    <span class="ex">hmmfetch</span> Pfam-A.hmm <span class="va">$name</span> <span class="op">&gt;</span> <span class="st">&quot;</span><span class="va">${outfolder}</span><span class="st">/</span><span class="va">$name</span><span class="st">.hmm&quot;</span></span>
-<span id="cb57-9"><a href="our-metagenomic-practice.html#cb57-9" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> 500_names.txt</span></code></pre></div>
+<span id="cb57-9"><a href="our-metagenomic-practice.html#cb57-9" tabindex="-1"></a><span class="cf">done</span> <span class="op">&lt;</span> all_names.txt</span></code></pre></div>
 <p>Create output directory for this script (Change <code>irsa</code> with your <code>utenteX</code> name)</p>
 <pre><code>mkdir -p /home/irsa/analisi_MG/output_s02/</code></pre>
 <p>Change its permission:
@@ -375,6 +375,8 @@ TIPS:</p>
 <p>Execute it:
 <code>./s02_splitPFAM.sh</code></p>
 </details>
+<p>As we can see, the run time of <code>hmmfetch</code> is very long. Try to execute the script only for 500 or 1000 extracted HMM names.</p>
+<p>How can you do it?</p>
 </div>
 </div>
 <div id="hmmsearch" class="section level4 hasAnchor" number="5.2.1.2">

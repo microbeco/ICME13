@@ -155,7 +155,7 @@ while read name
 do
     echo "$name"
     hmmfetch Pfam-A.hmm $name > "${outfolder}/$name.hmm"
-done < 500_names.txt
+done < all_names.txt
 ```
 
 Create output directory for this script (Change `irsa` with your `utenteX` name)
@@ -170,6 +170,11 @@ Execute it:
 `./s02_splitPFAM.sh`
 
 </details>
+
+
+As we can see, the run time of `hmmfetch` is very long. Try to execute the script only for 500 or 1000 extracted HMM names.
+
+How can you do it?
 
 
 #### `hmmsearch`
